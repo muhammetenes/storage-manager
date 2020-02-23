@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+{{ template "head.html" }}
+<body>
+{{ template "header.html" }}
+<main role="main">
+    <div class="d-flex align-items-center my-1 text-black-50 rounded shadow-sm">
+        <img class="mr-5" src="/static/bootstrap-4.4.1/site/docs/4.4/assets/brand/bootstrap-outline.svg" alt="" width="48" height="48">
+        <div class="lh-100">
+            <h5 class="mb-0 text-black lh-100">Objects</h5>
+        </div>
+    </div>
+    <div class="album py-1 bg-light">
+        <div class="container" style="max-width: 1340px">
+            <div class="row my-3 p-3 bg-white rounded shadow-sm" id="lightgallery">
+                {{range  .}}
+                    {{ if .Type }}
+                    <a href="{{.Url}}" style="padding-right: 10px">
+                        <img src="{{.Url}}" height="200px" style="border-radius: 10%"/>
+                        <p>{{.Name}}</p>
+                    </a>
+                    {{ else }}
+                    <a href="/static/bootstrap-4.4.1/dist/img/file-a.png" style="padding-right: 10px">
+                        <img src="/static/bootstrap-4.4.1/dist/img/file-a.png" height="200px" />
+                        <p style="text-align: center">{{.Name}}</p>
+                    </a>
+                    {{ end }}
+                {{end}}
+            </div>
+        </div>
+    </div>
+</main>
+
+{{ template "footer.html" }}
+
+{{ template "scripts.html" }}
+<script src="/static/light_gallery/lightgallery.js"></script>
+<script src="/static/light_gallery/lg-thumbnail.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#lightgallery").lightGallery({thumbnail: true});
+    });
+</script>
+</body>
+</html>
