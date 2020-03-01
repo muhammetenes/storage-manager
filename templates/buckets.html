@@ -5,10 +5,13 @@
 {{ template "header.html" }}
 <main role="main">
     <div class="d-flex align-items-center my-1 text-black-50 rounded shadow-sm">
-        <img class="mr-5" src="/static/bootstrap-4.4.1/site/docs/4.4/assets/brand/bootstrap-outline.svg" alt="" width="48" height="48">
-        <div class="lh-100">
+        <div class="col-md-3 offset-md-1">
             <h5 class="mb-0 text-black lh-100">Buckets</h5>
         </div>
+        <div class="col-md-7">
+            <a href="#" class="btn btn-primary my-2 float-right" data-toggle="modal" data-target="#createBucketModal">Create Bucket</a>
+        </div>
+        <div class="col-md-2"></div>
     </div>
     <div class="py-1 bg-light">
         <div class="my-3 p-3 bg-white rounded shadow-sm container" style="max-width: 1340px">
@@ -23,9 +26,79 @@
         </div>
     </div>
 </main>
+<div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Bucket</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createBucketForm" action="/create_bucket" method="post">
+                    <div class="form-group">
+                        <label for="bucket_name">Bucket Name</label>
+                        <input type="text" class="form-control" id="bucket_name" name="bucket_name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="createBucketButton">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center" id="modalBody">
+
+            </div>
+        </div>
+    </div>
+</div>
 
 {{ template "footer.html" }}
 
 {{ template "scripts.html" }}
+<script>
+    $("#createBucketForm").submit(function () {
+        var post_url = $(this).attr("action"); //get form action url
+        var request_method = $(this).attr("method"); //get form GET/POST method
+        var form_data = $(this).serialize(); //Encode form elements for submission
+        var createBucketButton = $("#createBucketButton");
+        $.ajax({
+            url: post_url,
+            type: request_method,
+            data: form_data
+        }).done(function (response) {
+            $("#modalBody").text(response.message);
+            if (response.error === false) {
+                location.reload()
+            }
+            $("#createBucketModal").modal("hide");
+            $("#exampleModalCenter").modal("show");
+            createBucketButton.text("Create");
+            $("#bucket_name").val("");
+            createBucketButton.removeAttr("disabled")
+        });
+        return false
+    });
+    $("#createBucketButton").click(function () {
+        var elem = $(this);
+        elem.attr("disabled", "");
+        elem.html("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>\n" +
+            "  Loading...");
+        $("#createBucketForm").submit();
+    })
+</script>
 </body>
 </html>

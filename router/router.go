@@ -9,8 +9,6 @@ import (
 	"main/views"
 )
 
-const Port = 1323
-
 func ValidKeyControl(key string, ctx echo.Context) (b bool, err error) {
 	validApiKey := "1234"
 	return key == validApiKey, nil
@@ -55,10 +53,30 @@ func New() *echo.Echo {
 	//	Validator: ValidKeyControl,
 	//}))
 	//e.Use(middleware.KeyAuth(ValidKeyControl))
+	//e.Use(createAwsSession())
 	e.Static("/static", "static")
 
-	e.GET("/:bucket/list_objects", views.ListObjects)
 	e.GET("/list_buckets", views.ListBuckets)
+	e.POST("/create_bucket", views.CreateBucket)
+	e.GET("/:bucket/list_objects", views.ListObjects)
+	e.POST("/:bucket/upload_file", views.UploadFileToBucket)
 
 	return e
 }
+
+//func createAwsSession() echo.MiddlewareFunc {
+//	return func(next echo.HandlerFunc) echo.HandlerFunc {
+//		return func(c echo.Context) error {
+//			sess, err := session.NewSession(&aws.Config{
+//				Credentials:credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
+//				Region: 	aws.String(config.AwsRegion),
+//			})
+//			svc := s3.New(sess)
+//			if err != nil {
+//				panic("Credentials is not correct")
+//			}
+//			c.Set("AwsS3Session", svc)
+//			return next(c)
+//		}
+//	}
+//}
