@@ -172,3 +172,29 @@ func UploadFileToBucket(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
 }
+
+func DeleteBucket(c echo.Context) error {
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
+		Region:      aws.String(config.AwsRegion),
+	})
+	svc := s3.New(sess)
+	bucket := c.ParamValues()[0]
+	_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
+		Bucket: aws.String(bucket),
+	})
+	if err != nil {
+		if awsErr, ok := err.(awserr.RequestFailure); ok {
+			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		}
+	}
+	err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
+		Bucket: aws.String(bucket),
+	})
+	if err != nil {
+		if awsErr, ok := err.(awserr.RequestFailure); ok {
+			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		}
+	}
+	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
+}
