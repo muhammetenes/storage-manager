@@ -9,10 +9,10 @@ import (
 	"main/views"
 )
 
-func ValidKeyControl(key string, ctx echo.Context) (b bool, err error) {
-	validApiKey := "1234"
-	return key == validApiKey, nil
-}
+//func ValidKeyControl(key string, ctx echo.Context) (b bool, err error) {
+//	validApiKey := "1234"
+//	return key == validApiKey, nil
+//}
 
 type Template struct {
 	templates *template.Template
@@ -60,6 +60,9 @@ func New() *echo.Echo {
 	e.POST("/create_bucket", views.CreateBucket)
 	e.GET("/:bucket/list_objects", views.ListObjects)
 	e.POST("/:bucket/upload_file", views.UploadFileToBucket)
+
+	e.GET("/:bucket/delete_bucket", views.DeleteBuckets)
+	e.POST("/:bucket/delete_object", views.DeleteObjects)
 
 	return e
 }
