@@ -33,6 +33,7 @@ type Object struct {
 type ListObjectsResult struct {
 	Bucket  Bucket
 	Objects []Object
+	Count   int
 }
 
 func getFileType(fileName string) string {
@@ -40,7 +41,7 @@ func getFileType(fileName string) string {
 	return result[len(result)-1]
 }
 
-var validFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG", "jpeg"}
+var validFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG", "jpg", "jpeg"}
 
 func ListObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
@@ -49,20 +50,23 @@ func ListObjects(c echo.Context) error {
 	})
 	svc := s3.New(sess)
 	bucket := c.ParamValues()[0]
-
-	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
-	if err != nil {
-		if awsErr, ok := err.(awserr.RequestFailure); ok {
-			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
-		} else {
-			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: "Error"})
-		}
-	}
 	var result = new(ListObjectsResult)
 	result.Bucket = Bucket{
 		Name: bucket,
 		Url:  bucket,
 	}
+
+	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
+	if err != nil {
+		return c.Render(http.StatusOK, "album.html", result)
+		//if awsErr, ok := err.(awserr.RequestFailure); ok {
+		//	return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		//} else {
+		//	return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: "Error"})
+		//}
+	}
+
+	result.Count = len(resp.Contents)
 	for _, item := range resp.Contents {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
@@ -73,6 +77,7 @@ func ListObjects(c echo.Context) error {
 		for _, val := range validFileType {
 			if fileType == val {
 				fileTypeIsValid = true
+				break
 			}
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
@@ -173,7 +178,7 @@ func UploadFileToBucket(c echo.Context) error {
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
 }
 
-func DeleteBucket(c echo.Context) error {
+func DeleteBuckets(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
 		Region:      aws.String(config.AwsRegion),
@@ -197,4 +202,47 @@ func DeleteBucket(c echo.Context) error {
 		}
 	}
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
+}
+
+func getObjectsToDelete(keys []string) []*s3.ObjectIdentifier {
+	var objects []*s3.ObjectIdentifier
+	for _, key := range keys {
+		objects = append(objects, &s3.ObjectIdentifier{
+			Key: aws.String(key),
+		})
+	}
+	return objects
+}
+
+func DeleteObjects(c echo.Context) error {
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
+		Region:      aws.String(config.AwsRegion),
+	})
+	_ = c.FormValue("keys[]")
+	keys := c.Request().Form["keys[]"]
+	otd := getObjectsToDelete(keys)
+	svc := s3.New(sess)
+	bucket := c.ParamValues()[0]
+	_, err = svc.DeleteObjects(&s3.DeleteObjectsInput{
+		Bucket: aws.String(bucket),
+		Delete: &s3.Delete{
+			Objects: otd,
+		},
+	})
+	if err != nil {
+		if awsErr, ok := err.(awserr.RequestFailure); ok {
+			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		}
+	}
+	err = svc.WaitUntilObjectNotExists(&s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(keys[len(keys)-1]),
+	})
+	if err != nil {
+		if awsErr, ok := err.(awserr.RequestFailure); ok {
+			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		}
+	}
+	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Objects Deleted"})
 }
