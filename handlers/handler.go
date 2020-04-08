@@ -1,4 +1,4 @@
-package views
+package handlers
 
 import (
 	"github.com/aws/aws-sdk-go/aws"

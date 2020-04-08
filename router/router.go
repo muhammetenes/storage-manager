@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"html/template"
 	"io"
-	"main/views"
+	"main/handlers"
 )
 
 //func ValidKeyControl(key string, ctx echo.Context) (b bool, err error) {
@@ -56,13 +56,13 @@ func New() *echo.Echo {
 	//e.Use(createAwsSession())
 	e.Static("/static", "static")
 
-	e.GET("/list_buckets", views.ListBuckets)
-	e.POST("/create_bucket", views.CreateBucket)
-	e.GET("/:bucket/list_objects", views.ListObjects)
-	e.POST("/:bucket/upload_file", views.UploadFileToBucket)
+	e.GET("/list_buckets", handlers.ListBuckets)
+	e.POST("/create_bucket", handlers.CreateBucket)
+	e.GET("/:bucket/list_objects", handlers.ListObjects)
+	e.POST("/:bucket/upload_file", handlers.UploadFileToBucket)
 
-	e.POST("/delete_buckets", views.DeleteBuckets)
-	e.POST("/:bucket/delete_objects", views.DeleteObjects)
+	e.POST("/delete_buckets", handlers.DeleteBuckets)
+	e.POST("/:bucket/delete_objects", handlers.DeleteObjects)
 
 	return e
 }
