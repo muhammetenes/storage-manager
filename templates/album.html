@@ -93,8 +93,8 @@
 </div> <!-- .site-wrap -->
 {{ template "scripts.html" }}
 <script type="text/javascript">
-  deleteItemUrl = "/{{ .Bucket.Name }}/delete_object";
-  object_count = {{ .Count }};
+  deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
+  item_count = {{ .Count }};
 
   $("#uploadFileForm").submit(function () {
     var post_url = $(this).attr("action"); //get form action url

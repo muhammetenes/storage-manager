@@ -61,8 +61,8 @@ func New() *echo.Echo {
 	e.GET("/:bucket/list_objects", views.ListObjects)
 	e.POST("/:bucket/upload_file", views.UploadFileToBucket)
 
-	e.GET("/:bucket/delete_bucket", views.DeleteBuckets)
-	e.POST("/:bucket/delete_object", views.DeleteObjects)
+	e.POST("/delete_buckets", views.DeleteBuckets)
+	e.POST("/:bucket/delete_objects", views.DeleteObjects)
 
 	return e
 }

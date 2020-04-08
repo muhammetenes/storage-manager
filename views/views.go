@@ -36,6 +36,11 @@ type ListObjectsResult struct {
 	Count   int
 }
 
+type ListBucketsResult struct {
+	Buckets []Bucket
+	Count   int
+}
+
 func getFileType(fileName string) string {
 	result := strings.Split(fileName, ".")
 	return result[len(result)-1]
@@ -104,9 +109,10 @@ func ListBuckets(c echo.Context) error {
 			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: "Error"})
 		}
 	}
-	var buckets []Bucket
+	var buckets ListBucketsResult
+	buckets.Count = len(resp.Buckets)
 	for _, item := range resp.Buckets {
-		buckets = append(buckets, Bucket{
+		buckets.Buckets = append(buckets.Buckets, Bucket{
 			Name: *item.Name,
 			Url:  c.Echo().URI(ListObjects, *item.Name),
 		})
@@ -184,21 +190,24 @@ func DeleteBuckets(c echo.Context) error {
 		Region:      aws.String(config.AwsRegion),
 	})
 	svc := s3.New(sess)
-	bucket := c.ParamValues()[0]
-	_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
-		Bucket: aws.String(bucket),
-	})
-	if err != nil {
-		if awsErr, ok := err.(awserr.RequestFailure); ok {
-			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+	_ = c.FormValue("buckets[]")
+	buckets := c.Request().Form["buckets[]"]
+	for _, bucket := range buckets {
+		_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
+			Bucket: aws.String(bucket),
+		})
+		if err != nil {
+			if awsErr, ok := err.(awserr.RequestFailure); ok {
+				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+			}
 		}
-	}
-	err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
-		Bucket: aws.String(bucket),
-	})
-	if err != nil {
-		if awsErr, ok := err.(awserr.RequestFailure); ok {
-			return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
+			Bucket: aws.String(bucket),
+		})
+		if err != nil {
+			if awsErr, ok := err.(awserr.RequestFailure); ok {
+				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+			}
 		}
 	}
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})

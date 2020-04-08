@@ -254,9 +254,9 @@ jQuery(document).ready(function ($) {
             $("#exampleModalCenter").modal("show");
 		    if (!response.error){
                 photo_item.remove();
-                object_count--
+                item_count--
             }
-            $(".object-count").text(object_count)
+            $(".object-count").text(item_count)
         });
 	}
 
@@ -277,9 +277,9 @@ jQuery(document).ready(function ($) {
                 $.each(photo_items, function (index, elem) {
                     elem.remove();
                 });
-                object_count -= photo_items.length
+                item_count -= photo_items.length
             }
-            $(".object-count").text(object_count)
+            $(".object-count").text(item_count)
         })
     }
     // album.html page context menu
@@ -308,13 +308,46 @@ jQuery(document).ready(function ($) {
 	});
 
     function deleteBucketsRequest(buckets) {
-        $.ajax({
-            url: ""
+        return $.ajax({
+            url: deleteBucketsUrl,
+            method: "post",
+            data: {
+                buckets: buckets
+            }
         })
     }
 
-    function deleteBuckets(key, options) {
+    function deleteBucket(key, options) {
+        var bucket_item = $(options["$trigger"][0]).parent();
+        var bucketKey = options["$trigger"][0].dataset.caption;
+        deleteBucketsRequest(bucketKey.split()).done(function (response) {
+            $("#modalBody").text(response.message);
+            $("#exampleModalCenter").modal("show");
+            if (!response.error){
+                bucket_item.remove();
+            }
+        });
+    }
 
+    function deleteBuckets(key, options) {
+        var itemKeys = $(".bucket-item-checkbox:checked");
+        var keys = [];
+        var bucket_items = [];
+        $.each(itemKeys, function (index, elem) {
+            var bucket_item = $(elem).parent().parent();
+            var key = bucket_item.children("a")[0].dataset.caption;
+            keys.push(key);
+            bucket_items.push(bucket_item)
+        });
+        deleteBucketsRequest(keys).done(function (response) {
+            $("#modalBody").text(response.message);
+            $("#exampleModalCenter").modal("show");
+            if (!response.error){
+                $.each(bucket_items, function (index, elem) {
+                    elem.remove();
+                });
+            }
+        })
     }
 
     // bucket.html page context menu
@@ -326,12 +359,12 @@ jQuery(document).ready(function ($) {
 		},
 		items: {
 			"rename": {name: "Rename bucket", icon: "edit"},
-			"delete": {name: "Delete bucket", icon: "delete"},
+			"delete": {name: "Delete bucket", icon: "delete", callback: deleteBucket},
 			"sep1": "---------",
 			"duplicate": {name: "Duplicate bucket", icon: "copy"},
 			"delete_selected": {name: "Delete selected buckets", icon:"delete", disabled: function () {
-					return $(document).find(".photo-item-checkbox:checked").length <= 1;
-				}},
+					return $(document).find(".bucket-item-checkbox:checked").length <= 1;
+				}, callback: deleteBuckets},
 		}
 	});
 
