@@ -3,6 +3,7 @@ module main
 go 1.13
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/aws/aws-sdk-go v1.29.3
 	github.com/chromedp/chromedp v0.5.3 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

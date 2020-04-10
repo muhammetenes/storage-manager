@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+{{ template "head.html" }}
+<body>
+
+
+<div class="site-wrap">
+
+    <div class="site-mobile-menu">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
+    </div>
+
+    <main>
+        <div class="container-fluid photos">
+            <div class="row justify-content-center">
+
+                <div class="col-md-6 pt-4" data-aos="fade-up">
+                    <h2 class="text-white mb-4">Credentials</h2>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{/*              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur <a href="#">adipisicing</a> elit. Ipsa explicabo quasi cum, laudantium neque at veniam itaque atque <a href="#">necessitatibus</a> temporibus! Beatae sit soluta magni neque autem, suscipit dolorem, quo alias.</p>*/}}
+
+
+                            <div class="row">
+                                <div class="col-md-12">
+
+
+                                    <form method="POST" action="/login">
+
+
+                                        {{/*                    <div class="row form-group">*/}}
+                                        {{/*                      <div class="col-md-6 mb-3 mb-md-0">*/}}
+                                        {{/*                        <label class="text-white" for="fname">First Name</label>*/}}
+                                        {{/*                        <input type="text" id="fname" class="form-control">*/}}
+                                        {{/*                      </div>*/}}
+                                        {{/*                      <div class="col-md-6">*/}}
+                                        {{/*                        <label class="text-white" for="lname">Last Name</label>*/}}
+                                        {{/*                        <input type="text" id="lname" class="form-control">*/}}
+                                        {{/*                      </div>*/}}
+                                        {{/*                    </div>*/}}
+                                        <div class="row form-group">
+
+                                            <div class="col-md-12">
+                                                <label class="text-white" for="email">Storage Provider</label>
+                                                <select id="storage_provider_id" name="storage_provider"
+                                                        class="form-control" required>
+                                                    <option value=""></option>
+                                                    <option value="s3">AWS S3</option>
+                                                    <option value="gcs">Google Cloud Storage</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+
+                                            <div class="col-md-12">
+                                                <label class="text-white" for="email">ID</label>
+                                                <input type="text" id="id_id" name="id" class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+
+                                            <div class="col-md-12">
+                                                <label class="text-white" for="subject">Secret Key</label>
+                                                <input type="text" id="secret_key_id" name="secret_key"
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group mb-5">
+                                            <div class="col-md-12">
+                                                <label class="text-white" for="message">Region</label>
+                                                <input type="text" name="region" id="region_id" class="form-control"
+                                                       placeholder="Write your cloud storage region...">
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-md-12">
+                                                <input type="submit" value="Start"
+                                                       class="btn btn-primary btn-md text-white">
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{ template "footer.html" }}
+        </div>
+    </main>
+
+</div> <!-- .site-wrap -->
+
+{{ template "scripts.html" }}
+
+</body>
+</html>

@@ -6,13 +6,10 @@ import (
 	"github.com/labstack/gommon/log"
 	"html/template"
 	"io"
+	"main/config"
 	"main/handlers"
+	"net/http"
 )
-
-//func ValidKeyControl(key string, ctx echo.Context) (b bool, err error) {
-//	validApiKey := "1234"
-//	return key == validApiKey, nil
-//}
 
 type Template struct {
 	templates *template.Template
@@ -56,6 +53,8 @@ func New() *echo.Echo {
 	//e.Use(createAwsSession())
 	e.Static("/static", "static")
 
+	e.GET("/login", handlers.LoginPage)
+	e.POST("/login", handlers.Login)
 	e.GET("/list_buckets", handlers.ListBuckets)
 	e.POST("/create_bucket", handlers.CreateBucket)
 	e.GET("/:bucket/list_objects", handlers.ListObjects)
