@@ -50,7 +50,7 @@ var validFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG
 
 func ListObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
 		Region:      aws.String(config.AwsRegion),
 	})
 	svc := s3.New(sess)
@@ -97,8 +97,8 @@ func ListObjects(c echo.Context) error {
 
 func ListBuckets(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	svc := s3.New(sess)
 	resp, err := svc.ListBuckets(nil)
@@ -122,8 +122,8 @@ func ListBuckets(c echo.Context) error {
 
 func CreateBucket(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	bucketName := c.FormValue("bucket_name")
 	svc := s3.New(sess)
@@ -149,8 +149,8 @@ func CreateBucket(c echo.Context) error {
 
 func UploadFileToBucket(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -186,8 +186,8 @@ func UploadFileToBucket(c echo.Context) error {
 
 func DeleteBuckets(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	svc := s3.New(sess)
 	_ = c.FormValue("buckets[]")
@@ -225,8 +225,8 @@ func getObjectsToDelete(keys []string) []*s3.ObjectIdentifier {
 
 func DeleteObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]

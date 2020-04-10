@@ -45,12 +45,7 @@ func New() *echo.Echo {
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339} ${status} ${method} ${host}${path} ${latency} ${latency_human}\n",
 	}))
-	//e.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
-	//	KeyLookup:  "header:authorization",
-	//	Validator: ValidKeyControl,
-	//}))
-	//e.Use(middleware.KeyAuth(ValidKeyControl))
-	//e.Use(createAwsSession())
+	e.Use(CredentialControl)
 	e.Static("/static", "static")
 
 	e.GET("/login", handlers.LoginPage)
@@ -66,19 +61,12 @@ func New() *echo.Echo {
 	return e
 }
 
-//func createAwsSession() echo.MiddlewareFunc {
-//	return func(next echo.HandlerFunc) echo.HandlerFunc {
-//		return func(c echo.Context) error {
-//			sess, err := session.NewSession(&aws.Config{
-//				Credentials:credentials.NewStaticCredentials(config.AwsId, config.AwsSecretKey, ""),
-//				Region: 	aws.String(config.AwsRegion),
-//			})
-//			svc := s3.New(sess)
-//			if err != nil {
-//				panic("Credentials is not correct")
-//			}
-//			c.Set("AwsS3Session", svc)
-//			return next(c)
-//		}
-//	}
-//}
+func CredentialControl(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		loginRoutePath := c.Echo().URI(handlers.Login, nil)
+		if config.Conf.Status == false && c.Path() != loginRoutePath {
+			return c.Redirect(http.StatusMovedPermanently, loginRoutePath)
+		}
+		return next(c)
+	}
+}
