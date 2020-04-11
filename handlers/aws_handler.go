@@ -51,7 +51,7 @@ var validFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG
 func ListObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.AwsRegion),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
 	svc := s3.New(sess)
 	bucket := c.ParamValues()[0]
