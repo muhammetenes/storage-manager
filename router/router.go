@@ -45,11 +45,12 @@ func New() *echo.Echo {
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339} ${status} ${method} ${host}${path} ${latency} ${latency_human}\n",
 	}))
-	e.Use(CredentialControl)
 	e.Static("/static", "static")
+	e.Use(credentialControl)
 
 	e.GET("/login", handlers.LoginPage)
 	e.POST("/login", handlers.Login)
+	e.GET("/logout", handlers.Logout)
 	e.GET("/list_buckets", handlers.ListBuckets)
 	e.POST("/create_bucket", handlers.CreateBucket)
 	e.GET("/:bucket/list_objects", handlers.ListObjects)
@@ -61,11 +62,11 @@ func New() *echo.Echo {
 	return e
 }
 
-func CredentialControl(next echo.HandlerFunc) echo.HandlerFunc {
+func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		loginRoutePath := c.Echo().URI(handlers.Login, nil)
-		if config.Conf.Status == false && c.Path() != loginRoutePath {
-			return c.Redirect(http.StatusMovedPermanently, loginRoutePath)
+		if config.Conf.Status == false && (c.Path() != loginRoutePath && c.Path() != "/static/*" && c.Path() != "") {
+			return c.Redirect(http.StatusFound, loginRoutePath)
 		}
 		return next(c)
 	}
