@@ -695,7 +695,8 @@ h1, h2, h3, h4, h5,
       .main-content .photos .photo-item .photo-text-more .heading {
         font-size: 16px;
         color: #fff;
-        margin-bottom: 0; }
+        margin-bottom: 0;
+        overflow: hidden; }
       .main-content .photos .photo-item .photo-text-more .meta {
         color: #cccccc;
         text-transform: uppercase;
