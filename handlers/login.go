@@ -29,5 +29,17 @@ func Login(c echo.Context) error {
 		}
 
 	}
-	return c.Redirect(http.StatusMovedPermanently, "/list_buckets")
+	return c.Redirect(http.StatusFound, "/list_buckets")
+}
+
+func Logout(c echo.Context) error {
+	config.Conf = config.Config{
+		Status: false,
+		AwsConfig: config.AwsConfig{
+			AwsId:        "",
+			AwsSecretKey: "",
+			AwsRegion:    "",
+		},
+	}
+	return c.Redirect(http.StatusFound, "/login")
 }
