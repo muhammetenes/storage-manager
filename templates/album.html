@@ -23,7 +23,7 @@
           <button class="btn btn-primary btn-md text-white" onclick="location.href='/list_buckets'">< Buckets</button>
         </div>
         <div class="col-8">
-          <h2 class="text-white mb-4">{{ .Bucket.Name  }} &mdash; <span class="object-count">{{ .Count }}</span> Photos</h2>
+          <h2 class="text-white mb-4">{{ .Bucket.Name  }} &mdash; <span class="object-count">{{ .Count }}</span> Files</h2>
         </div>
         <div class="col-md-2">
           <input type="submit" value="Upload" class="btn btn-primary btn-md text-white" data-toggle="modal" data-target="#UploadFileModal">
@@ -31,7 +31,21 @@
       </div>
 
       <div class="row align-items-stretch">
-        {{range  .Objects }}
+        {{ range .Folders }}
+          <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+            <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
+            <a href="{{ .Url }}" class="d-block photo-item album-item" data-caption="{{.Name}}">
+              <img src="/static/folder_icon.png" alt="Image" class="img-fluid">
+              <div class="photo-text-more">
+                <div class="photo-text-more">
+                  <h3 class="heading">{{.Name}}</h3>
+                  <br><span class="icon icon-folder"></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        {{ end }}
+        {{ range  .Objects }}
           {{ if .Type }}
             <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
               <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
@@ -59,7 +73,7 @@
               </a>
             </div>
           {{ end }}
-        {{end}}
+        {{ end }}
       </div>
 
       {{ template "footer.html" }}

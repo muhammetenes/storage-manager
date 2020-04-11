@@ -53,7 +53,8 @@ func New() *echo.Echo {
 	e.GET("/logout", handlers.Logout)
 	e.GET("/list_buckets", handlers.ListBuckets)
 	e.POST("/create_bucket", handlers.CreateBucket)
-	e.GET("/:bucket/list_objects", handlers.ListObjects)
+	e.GET("/:bucket/list_objects", handlers.ListBaseObjects)
+	e.GET("/:bucket/list_objects/:key", handlers.ListFolderObjects)
 	e.POST("/:bucket/upload_file", handlers.UploadFileToBucket)
 
 	e.POST("/delete_buckets", handlers.DeleteBuckets)

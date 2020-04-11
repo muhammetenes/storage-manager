@@ -30,9 +30,15 @@ type Object struct {
 	Type bool
 }
 
+type Folder struct {
+	Name string
+	Url  string
+}
+
 type ListObjectsResult struct {
 	Bucket  Bucket
 	Objects []Object
+	Folders []Folder
 	Count   int
 }
 
@@ -48,7 +54,7 @@ func getFileType(fileName string) string {
 
 var validFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG", "jpg", "jpeg"}
 
-func ListObjects(c echo.Context) error {
+func ListBaseObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
 		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
@@ -61,7 +67,11 @@ func ListObjects(c echo.Context) error {
 		Url:  bucket,
 	}
 
-	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
+	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket:    aws.String(bucket),
+		MaxKeys:   aws.Int64(100),
+		Delimiter: aws.String("/"),
+	})
 	if err != nil {
 		return c.Render(http.StatusOK, "album.html", result)
 		//if awsErr, ok := err.(awserr.RequestFailure); ok {
@@ -72,7 +82,74 @@ func ListObjects(c echo.Context) error {
 	}
 
 	result.Count = len(resp.Contents)
+	for _, item := range resp.CommonPrefixes {
+		result.Folders = append(result.Folders, Folder{
+			Name: *item.Prefix,
+			Url:  c.Echo().URI(ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
+		})
+	}
 	for _, item := range resp.Contents {
+		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(*item.Key),
+		})
+		fileType := getFileType(*item.Key)
+		fileTypeIsValid := false
+		for _, val := range validFileType {
+			if fileType == val {
+				fileTypeIsValid = true
+				break
+			}
+		}
+		urlStr, _ := req.Presign(15 * time.Minute)
+		result.Objects = append(result.Objects, Object{
+			Name: *item.Key,
+			Url:  urlStr,
+			Type: fileTypeIsValid,
+		})
+	}
+	return c.Render(http.StatusOK, "album.html", result)
+}
+
+func ListFolderObjects(c echo.Context) error {
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
+		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
+	})
+	svc := s3.New(sess)
+	bucket := c.ParamValues()[0]
+	folderKey := strings.Replace(c.ParamValues()[1], ":", "/", -1)
+	var result = new(ListObjectsResult)
+	result.Bucket = Bucket{
+		Name: bucket + "/" + folderKey,
+		Url:  bucket,
+	}
+
+	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket:    aws.String(bucket),
+		MaxKeys:   aws.Int64(100),
+		Delimiter: aws.String("/"),
+		Prefix:    aws.String(folderKey),
+	})
+	if err != nil {
+		return c.Render(http.StatusOK, "album.html", result)
+	}
+
+	if len(resp.Contents) > 0 {
+		result.Count = len(resp.Contents) - 1
+	}
+	// Adding folders
+	for _, item := range resp.CommonPrefixes {
+		result.Folders = append(result.Folders, Folder{
+			Name: *item.Prefix,
+			Url:  c.Echo().URI(ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
+		})
+	}
+	// Added objects
+	for i, item := range resp.Contents {
+		if i == 0 {
+			continue
+		}
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(*item.Key),
@@ -114,7 +191,7 @@ func ListBuckets(c echo.Context) error {
 	for _, item := range resp.Buckets {
 		buckets.Buckets = append(buckets.Buckets, Bucket{
 			Name: *item.Name,
-			Url:  c.Echo().URI(ListObjects, *item.Name),
+			Url:  c.Echo().URI(ListBaseObjects, *item.Name, ""),
 		})
 	}
 	return c.Render(http.StatusOK, "buckets.html", buckets)
