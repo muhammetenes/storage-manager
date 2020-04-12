@@ -292,6 +292,7 @@ jQuery(document).ready(function ($) {
         })
     }
     // album.html page context menu
+    var download_item = $("#download-item")
 	$.contextMenu({
 		selector: '.album-item',
 		callback: function(key, options) {
@@ -304,8 +305,8 @@ jQuery(document).ready(function ($) {
 			"copy": {name: "Copy", icon: "copy"},
 			"delete": {name: "Delete", icon: "delete", callback: deleteItem},
             "download": {name: "Download", icon: "download", callback: function (key, options) {
-                    $("#download-item").attr("href", options.$trigger[0].dataset.url);
-                    $("#download-item")[0].click()
+                    download_item.attr("href", options.$trigger[0].dataset.url);
+                    download_item[0].click()
                 }},
 			"sep1": "---------",
 			"move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
@@ -317,6 +318,15 @@ jQuery(document).ready(function ($) {
 			"delete_selected": {name: "Delete selected items", icon:"delete", disabled: function () {
 					return $(document).find(".photo-item-checkbox:checked").length <= 1;
 				}, callback: deleteItems},
+            "download_selected": {name: "Download selected items", icon: "download", disabled: function () {
+                    return $(document).find(".photo-item-checkbox:checked").length <= 1;
+                }, callback:function (key, options) {
+                    $.each($(document).find(".photo-item-checkbox:checked"), function (i, elem) {
+                        var data_url = $(elem).parent().parent().children("a")[0].dataset.url
+                        download_item.attr("href", data_url);
+                        setTimeout(download_item[0].click(), )
+                    })
+                }}
 		}
 	});
 
