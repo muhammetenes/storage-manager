@@ -34,7 +34,7 @@
         {{ range .Folders }}
           <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
             <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-            <a href="{{ .Url }}" class="d-block photo-item album-item" data-caption="{{.Name}}">
+            <a href="{{ .Url }}" class="d-block photo-item folder-item" data-caption="{{.Name}}">
               <img src="/static/folder_icon.png" alt="Image" class="img-fluid">
               <div class="photo-text-more">
                 <div class="photo-text-more">
@@ -49,7 +49,7 @@
           {{ if .Type }}
             <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
               <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-              <a href="{{.Url}}" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{ .Name }}">
+              <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{ .Name }}">
                 <img src="{{.Url}}" alt="Image" class="img-fluid">
                 <div class="photo-text-more">
                   <div class="photo-text-more">
@@ -62,7 +62,7 @@
           {{ else }}
             <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
               <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-              <a href="/static/file_icon.png" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{.Name}}">
+              <a href="/static/file_icon.png" data-url="{{ .Url }}" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{.Name}}">
                 <img src="/static/file_icon.png" alt="Image" class="img-fluid">
                 <div class="photo-text-more">
                   <div class="photo-text-more">
@@ -75,7 +75,7 @@
           {{ end }}
         {{ end }}
       </div>
-
+      <a id="download-item" target="_blank" href="" download></a>
       {{ template "footer.html" }}
     </div>
   </main>

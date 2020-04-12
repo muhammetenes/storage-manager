@@ -236,6 +236,15 @@ jQuery(document).ready(function ($) {
     };
     siteDatePicker();
 
+    // $('[data-fancybox="gallery"]').fancybox({
+    //     buttons: [
+    //         "zoom",
+    //         "download",
+    //         "close"
+    //     ],
+    // });
+
+    // ALBUM AREA
     function deleteItemsRequest(keys) {
 		return $.ajax({
 			url: deleteItemUrl,
@@ -294,6 +303,10 @@ jQuery(document).ready(function ($) {
 			"move": {name: "Move", icon: "paste"},
 			"copy": {name: "Copy", icon: "copy"},
 			"delete": {name: "Delete", icon: "delete", callback: deleteItem},
+            "download": {name: "Download", icon: "download", callback: function (key, options) {
+                    $("#download-item").attr("href", options.$trigger[0].dataset.url);
+                    $("#download-item")[0].click()
+                }},
 			"sep1": "---------",
 			"move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
 					return $(document).find(".photo-item-checkbox:checked").length <= 1;
@@ -307,6 +320,7 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
+    // BUCKET AREA
     function deleteBucketsRequest(buckets) {
         return $.ajax({
             url: deleteBucketsUrl,
