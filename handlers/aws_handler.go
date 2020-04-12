@@ -66,29 +66,28 @@ func ListBaseObjects(c echo.Context) error {
 		Name: bucket,
 		Url:  bucket,
 	}
-
+	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
-		Bucket:    aws.String(bucket),
-		MaxKeys:   aws.Int64(100),
+		Bucket: aws.String(bucket),
+		//MaxKeys:   aws.Int64(100),
 		Delimiter: aws.String("/"),
 	})
 	if err != nil {
 		return c.Render(http.StatusOK, "album.html", result)
-		//if awsErr, ok := err.(awserr.RequestFailure); ok {
-		//	return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
-		//} else {
-		//	return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: "Error"})
-		//}
 	}
-
-	result.Count = len(resp.Contents)
-	for _, item := range resp.CommonPrefixes {
-		result.Folders = append(result.Folders, Folder{
+	// Adding folders
+	result.Folders = make([]Folder, len(resp.CommonPrefixes))
+	for i, item := range resp.CommonPrefixes {
+		result.Folders[i] = Folder{
 			Name: *item.Prefix,
 			Url:  c.Echo().URI(ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
-		})
+		}
 	}
-	for _, item := range resp.Contents {
+	// Adding object count
+	result.Count = len(resp.Contents)
+	// Adding objects
+	result.Objects = make([]Object, result.Count)
+	for i, item := range resp.Contents {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(*item.Key),
@@ -102,11 +101,11 @@ func ListBaseObjects(c echo.Context) error {
 			}
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
-		result.Objects = append(result.Objects, Object{
+		result.Objects[i] = Object{
 			Name: *item.Key,
 			Url:  urlStr,
 			Type: fileTypeIsValid,
-		})
+		}
 	}
 	return c.Render(http.StatusOK, "album.html", result)
 }
@@ -125,6 +124,7 @@ func ListFolderObjects(c echo.Context) error {
 		Url:  bucket,
 	}
 
+	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:    aws.String(bucket),
 		MaxKeys:   aws.Int64(100),
@@ -135,17 +135,22 @@ func ListFolderObjects(c echo.Context) error {
 		return c.Render(http.StatusOK, "album.html", result)
 	}
 
+	// Adding folders
+	result.Folders = make([]Folder, len(resp.CommonPrefixes))
+	for i, item := range resp.CommonPrefixes {
+		result.Folders[i] = Folder{
+			Name: *item.Prefix,
+			Url:  c.Echo().URI(ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
+		}
+	}
+
+	// Adding object count
+	// The first object in the folder is always itself
 	if len(resp.Contents) > 0 {
 		result.Count = len(resp.Contents) - 1
 	}
-	// Adding folders
-	for _, item := range resp.CommonPrefixes {
-		result.Folders = append(result.Folders, Folder{
-			Name: *item.Prefix,
-			Url:  c.Echo().URI(ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
-		})
-	}
-	// Added objects
+	// Adding objects
+	result.Objects = make([]Object, result.Count)
 	for i, item := range resp.Contents {
 		if i == 0 {
 			continue
@@ -163,11 +168,12 @@ func ListFolderObjects(c echo.Context) error {
 			}
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
-		result.Objects = append(result.Objects, Object{
+		// Used [i - 1] because the first object is the folder itself
+		result.Objects[i-1] = Object{
 			Name: *item.Key,
 			Url:  urlStr,
 			Type: fileTypeIsValid,
-		})
+		}
 	}
 	return c.Render(http.StatusOK, "album.html", result)
 }
