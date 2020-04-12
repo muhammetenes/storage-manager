@@ -324,7 +324,7 @@ jQuery(document).ready(function ($) {
                     $.each($(document).find(".photo-item-checkbox:checked"), function (i, elem) {
                         var data_url = $(elem).parent().parent().children("a")[0].dataset.url
                         download_item.attr("href", data_url);
-                        setTimeout(download_item[0].click(), )
+                        download_item[0].click()
                     })
                 }}
 		}
