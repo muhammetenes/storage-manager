@@ -151,10 +151,7 @@ func ListFolderObjects(c echo.Context) error {
 	}
 	// Adding objects
 	result.Objects = make([]Object, result.Count)
-	for i, item := range resp.Contents {
-		if i == 0 {
-			continue
-		}
+	for i, item := range resp.Contents[1:] {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(*item.Key),
@@ -169,7 +166,7 @@ func ListFolderObjects(c echo.Context) error {
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
 		// Used [i - 1] because the first object is the folder itself
-		result.Objects[i-1] = Object{
+		result.Objects[i] = Object{
 			Name: *item.Key,
 			Url:  urlStr,
 			Type: fileTypeIsValid,
