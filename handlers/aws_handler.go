@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/labstack/echo"
 	"main/config"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"time"
@@ -151,6 +152,7 @@ func ListFolderObjects(c echo.Context) error {
 	}
 	// Adding objects
 	result.Objects = make([]Object, result.Count)
+	// Used [:i] because the first object is the folder itself
 	for i, item := range resp.Contents[1:] {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
@@ -165,7 +167,7 @@ func ListFolderObjects(c echo.Context) error {
 			}
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
-		// Used [i - 1] because the first object is the folder itself
+
 		result.Objects[i] = Object{
 			Name: *item.Key,
 			Url:  urlStr,
@@ -238,28 +240,39 @@ func UploadFileToBucket(c echo.Context) error {
 	}
 	bucket := c.ParamValues()[0]
 	files := form.File["file_input"]
+	done := make(chan bool, len(files))
 	for _, file := range files {
 		// Source
-		src, err := file.Open()
-		if err != nil {
-			if awsErr, ok := err.(awserr.RequestFailure); ok {
-				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		go func(file *multipart.FileHeader) {
+			src, err := file.Open()
+			if err != nil {
+				if _, ok := err.(awserr.RequestFailure); ok {
+					done <- false
+					return
+					//return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+				}
 			}
-		}
-		defer src.Close()
+			defer src.Close()
 
-		// Copy
-		uploader := s3manager.NewUploader(sess)
-		_, err = uploader.Upload(&s3manager.UploadInput{
-			Bucket: aws.String(bucket),
-			Key:    aws.String(file.Filename),
-			Body:   src,
-		})
-		if err != nil {
-			if awsErr, ok := err.(awserr.RequestFailure); ok {
-				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+			// Copy
+			uploader := s3manager.NewUploader(sess)
+			_, err = uploader.Upload(&s3manager.UploadInput{
+				Bucket: aws.String(bucket),
+				Key:    aws.String(file.Filename),
+				Body:   src,
+			})
+			if err != nil {
+				if _, ok := err.(awserr.RequestFailure); ok {
+					done <- false
+					return
+					//return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+				}
 			}
-		}
+			done <- true
+		}(file)
+	}
+	for i := 0; i < len(files); i++ {
+		<-done
 	}
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
 }
