@@ -285,23 +285,34 @@ func DeleteBuckets(c echo.Context) error {
 	svc := s3.New(sess)
 	_ = c.FormValue("buckets[]")
 	buckets := c.Request().Form["buckets[]"]
+	done := make(chan bool, len(buckets))
 	for _, bucket := range buckets {
-		_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
-			Bucket: aws.String(bucket),
-		})
-		if err != nil {
-			if awsErr, ok := err.(awserr.RequestFailure); ok {
-				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+		go func() {
+			_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
+				Bucket: aws.String(bucket),
+			})
+			if err != nil {
+				if _, ok := err.(awserr.RequestFailure); ok {
+					done <- false
+					return
+					//return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+				}
 			}
-		}
-		err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
-			Bucket: aws.String(bucket),
-		})
-		if err != nil {
-			if awsErr, ok := err.(awserr.RequestFailure); ok {
-				return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+			err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
+				Bucket: aws.String(bucket),
+			})
+			if err != nil {
+				if _, ok := err.(awserr.RequestFailure); ok {
+					done <- false
+					return
+					//return c.JSON(http.StatusOK, JsonResponse{Error: true, Message: awsErr.Message()})
+				}
 			}
-		}
+			done <- true
+		}()
+	}
+	for i := 0; i < len(buckets); i++ {
+		<-done
 	}
 	return c.JSON(http.StatusOK, JsonResponse{Error: false, Message: "Success"})
 }
