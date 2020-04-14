@@ -21,8 +21,9 @@ type JsonResponse struct {
 }
 
 type Bucket struct {
-	Name string
-	Url  string
+	Name   string
+	Prefix string
+	Url    string
 }
 
 type Object struct {
@@ -121,8 +122,9 @@ func ListFolderObjects(c echo.Context) error {
 	folderKey := strings.Replace(c.ParamValues()[1], ":", "/", -1)
 	var result = new(ListObjectsResult)
 	result.Bucket = Bucket{
-		Name: bucket + "/" + folderKey,
-		Url:  bucket,
+		Name:   bucket,
+		Prefix: folderKey,
+		Url:    bucket,
 	}
 
 	// Get objects
@@ -239,6 +241,7 @@ func UploadFileToBucket(c echo.Context) error {
 		return err
 	}
 	bucket := c.ParamValues()[0]
+	folder_key := form.Value["folder_key_input"]
 	files := form.File["file_input"]
 	done := make(chan bool, len(files))
 	for _, file := range files {
@@ -258,7 +261,7 @@ func UploadFileToBucket(c echo.Context) error {
 			uploader := s3manager.NewUploader(sess)
 			_, err = uploader.Upload(&s3manager.UploadInput{
 				Bucket: aws.String(bucket),
-				Key:    aws.String(file.Filename),
+				Key:    aws.String(folder_key[0] + file.Filename),
 				Body:   src,
 			})
 			if err != nil {

@@ -23,7 +23,7 @@
           <button class="btn btn-primary btn-md text-white" onclick="location.href='/list_buckets'">< Buckets</button>
         </div>
         <div class="col-8">
-          <h2 class="text-white mb-4">{{ .Bucket.Name  }} &mdash; <span class="object-count">{{ .Count }}</span> Files</h2>
+          <h2 class="text-white mb-4">{{ .Bucket.Name  }}/{{ .Bucket.Prefix }} &mdash; <span class="object-count">{{ .Count }}</span> Files</h2>
         </div>
         <div class="col-md-2">
           <input type="submit" value="Upload" class="btn btn-primary btn-md text-white" data-toggle="modal" data-target="#UploadFileModal">
@@ -91,6 +91,7 @@
           <form enctype="multipart/form-data" id="uploadFileForm" action="/{{.Bucket.Name}}/upload_file" method="post">
             <div class="form-group">
               <label for="file_input">Files</label>
+              <input type="text" value="{{ .Bucket.Prefix }}" id="folder_key_input" name="folder_key_input" style="display: none">
               <input multiple type="file" class="form-control" id="file_input" name="file_input">
             </div>
           </form>
@@ -108,6 +109,7 @@
 <script type="text/javascript">
   deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
   item_count = {{ .Count }};
+  folder_key = "{{ .Bucket.Prefix }}";
 
   $("#uploadFileForm").submit(function () {
     var post_url = $(this).attr("action"); //get form action url
