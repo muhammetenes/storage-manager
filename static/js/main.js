@@ -286,6 +286,11 @@ jQuery(document).ready(function ($) {
                 $.each(photo_items, function (index, elem) {
                     elem.remove();
                 });
+                AOS.init({
+                    duration: 800,
+                    easing: 'slide',
+                    once: false
+                });
                 item_count -= photo_items.length
             }
             $(".object-count").text(item_count)
