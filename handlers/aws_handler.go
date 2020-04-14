@@ -38,10 +38,11 @@ type Folder struct {
 }
 
 type ListObjectsResult struct {
-	Bucket  Bucket
-	Objects []Object
-	Folders []Folder
-	Count   int
+	Bucket            Bucket
+	Objects           []Object
+	Folders           []Folder
+	Count             int
+	PreviousFolderUrl string
 }
 
 type ListBucketsResult struct {
@@ -112,6 +113,16 @@ func ListBaseObjects(c echo.Context) error {
 	return c.Render(http.StatusOK, "album.html", result)
 }
 
+func getPreviousUrl(f string, c echo.Context, b string) string {
+	splitFolder := strings.Split(f, ":")
+	folder := strings.Join(splitFolder[0:len(splitFolder)-2], "") + ":"
+	if folder == ":" {
+		return c.Echo().URI(ListBaseObjects, b)
+	} else {
+		return c.Echo().URI(ListFolderObjects, b, folder)
+	}
+}
+
 func ListFolderObjects(c echo.Context) error {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
@@ -126,7 +137,7 @@ func ListFolderObjects(c echo.Context) error {
 		Prefix: folderKey,
 		Url:    bucket,
 	}
-
+	result.PreviousFolderUrl = getPreviousUrl(c.ParamValues()[1], c, bucket)
 	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:    aws.String(bucket),
@@ -149,9 +160,7 @@ func ListFolderObjects(c echo.Context) error {
 
 	// Adding object count
 	// The first object in the folder is always itself
-	if len(resp.Contents) > 0 {
-		result.Count = len(resp.Contents) - 1
-	}
+	result.Count = len(resp.Contents) - 1
 	// Adding objects
 	result.Objects = make([]Object, result.Count)
 	// Used [:i] because the first object is the folder itself
