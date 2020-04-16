@@ -1,8 +1,9 @@
-package handlers
+package login
 
 import (
 	"github.com/labstack/echo"
 	"main/config"
+	"main/handlers/awss3"
 	"net/http"
 )
 
@@ -17,29 +18,17 @@ func Login(c echo.Context) error {
 	Region := c.FormValue("region")
 
 	if storageProvider != "" && ID != "" && SecretKey != "" {
-		if storageProvider == "s3" {
-			config.Conf = config.Config{
-				Status: true,
-				AwsConfig: config.AwsConfig{
-					AwsId:        ID,
-					AwsSecretKey: SecretKey,
-					AwsRegion:    Region,
-				},
-			}
+		switch storageProvider {
+		case "s3":
+			config.Conf.Init(true, awss3.Handler{}, ID, SecretKey, Region)
+		case "gcs":
+			config.Conf.Init(true, awss3.Handler{}, ID, SecretKey, Region)
 		}
-
 	}
 	return c.Redirect(http.StatusFound, "/list_buckets")
 }
 
 func Logout(c echo.Context) error {
-	config.Conf = config.Config{
-		Status: false,
-		AwsConfig: config.AwsConfig{
-			AwsId:        "",
-			AwsSecretKey: "",
-			AwsRegion:    "",
-		},
-	}
+	config.Conf.DestroyConfig()
 	return c.Redirect(http.StatusFound, "/login")
 }
