@@ -19,12 +19,16 @@ import (
 
 type Handler struct{}
 
-func (h Handler) ListBaseObjects(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
+func getSession() *session.Session {
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
 		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
 	})
-	svc := s3.New(sess)
+	return sess
+}
+
+func (h Handler) ListBaseObjects(c echo.Context) error {
+	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
 	var result = new(handlers.ListObjectsResult)
 	result.Bucket = handlers.Bucket{
@@ -86,11 +90,7 @@ func getPreviousUrl(f string, c echo.Context, b string) string {
 }
 
 func (h Handler) ListFolderObjects(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
-	svc := s3.New(sess)
+	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
 	folderKey := strings.Replace(c.ParamValues()[1], ":", "/", -1)
 	var result = new(handlers.ListObjectsResult)
@@ -151,11 +151,7 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 }
 
 func (h Handler) ListBuckets(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
-	svc := s3.New(sess)
+	svc := s3.New(getSession())
 	resp, err := svc.ListBuckets(nil)
 	if err != nil {
 		if awsErr, ok := err.(awserr.RequestFailure); ok {
@@ -176,13 +172,9 @@ func (h Handler) ListBuckets(c echo.Context) error {
 }
 
 func (h Handler) CreateBucket(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
+	svc := s3.New(getSession())
 	bucketName := c.FormValue("bucket_name")
-	svc := s3.New(sess)
-	_, err = svc.CreateBucket(&s3.CreateBucketInput{
+	_, err := svc.CreateBucket(&s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
 	})
 	if err != nil {
@@ -203,10 +195,7 @@ func (h Handler) CreateBucket(c echo.Context) error {
 }
 
 func (h Handler) UploadFileToBucket(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
+	sess := getSession()
 	form, err := c.MultipartForm()
 	if err != nil {
 		return err
@@ -252,17 +241,13 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 }
 
 func (h Handler) DeleteBuckets(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
-	svc := s3.New(sess)
+	svc := s3.New(getSession())
 	_ = c.FormValue("buckets[]")
 	buckets := c.Request().Form["buckets[]"]
 	done := make(chan bool, len(buckets))
 	for _, bucket := range buckets {
-		go func() {
-			_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
+		go func(bucket string) {
+			_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
 				Bucket: aws.String(bucket),
 			})
 			if err != nil {
@@ -283,7 +268,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 				}
 			}
 			done <- true
-		}()
+		}(bucket)
 	}
 	for i := 0; i < len(buckets); i++ {
 		<-done
@@ -302,16 +287,12 @@ func getObjectsToDelete(keys []string) []*s3.ObjectIdentifier {
 }
 
 func (h Handler) DeleteObjects(c echo.Context) error {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
-		Region:      aws.String(config.Conf.AwsConfig.AwsRegion),
-	})
 	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]
 	otd := getObjectsToDelete(keys)
-	svc := s3.New(sess)
+	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
-	_, err = svc.DeleteObjects(&s3.DeleteObjectsInput{
+	_, err := svc.DeleteObjects(&s3.DeleteObjectsInput{
 		Bucket: aws.String(bucket),
 		Delete: &s3.Delete{
 			Objects: otd,
