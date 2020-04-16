@@ -8,6 +8,7 @@ import (
 	"io"
 	"main/config"
 	"main/handlers"
+	"main/handlers/login"
 	"net/http"
 )
 
@@ -21,7 +22,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func New() *echo.Echo {
 	t := &Template{
-		templates: template.Must(template.ParseGlob("templates/*.html")),
+		templates: template.Must(template.ParseGlob("/Users/enes/go/src/storage-manager/templates/*.html")),
 	}
 	e := echo.New()
 	e.Renderer = t
@@ -48,9 +49,9 @@ func New() *echo.Echo {
 	e.Static("/static", "static")
 	e.Use(credentialControl)
 
-	e.GET("/login", handlers.LoginPage)
-	e.POST("/login", handlers.Login)
-	e.GET("/logout", handlers.Logout)
+	e.GET("/login", login.LoginPage)
+	e.POST("/login", login.Login)
+	e.GET("/logout", login.Logout)
 	e.GET("/list_buckets", handlers.ListBuckets)
 	e.POST("/create_bucket", handlers.CreateBucket)
 	e.GET("/:bucket/list_objects", handlers.ListBaseObjects)
@@ -65,7 +66,7 @@ func New() *echo.Echo {
 
 func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		loginRoutePath := c.Echo().URI(handlers.Login, nil)
+		loginRoutePath := c.Echo().URI(login.Login, nil)
 		if config.Conf.Status == false && (c.Path() != loginRoutePath && c.Path() != "/static/*" && c.Path() != "") {
 			return c.Redirect(http.StatusFound, loginRoutePath)
 		}
