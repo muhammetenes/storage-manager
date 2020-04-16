@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo"
 	"main/config"
 	"main/handlers"
+	"main/handlers/base_handlers"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -44,7 +45,7 @@ func (h Handler) ListBaseObjects(c echo.Context) error {
 	for i, item := range resp.CommonPrefixes {
 		result.Folders[i] = handlers.Folder{
 			Name: *item.Prefix,
-			Url:  c.Echo().URI(handlers.ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
+			Url:  c.Echo().URI(base_handlers.ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
 		}
 	}
 	// Adding object count
@@ -78,9 +79,9 @@ func getPreviousUrl(f string, c echo.Context, b string) string {
 	splitFolder := strings.Split(f, ":")
 	folder := strings.Join(splitFolder[0:len(splitFolder)-2], "") + ":"
 	if folder == ":" {
-		return c.Echo().URI(handlers.ListBaseObjects, b)
+		return c.Echo().URI(base_handlers.ListBaseObjects, b)
 	} else {
-		return c.Echo().URI(handlers.ListFolderObjects, b, folder)
+		return c.Echo().URI(base_handlers.ListFolderObjects, b, folder)
 	}
 }
 
@@ -115,7 +116,7 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 	for i, item := range resp.CommonPrefixes {
 		result.Folders[i] = handlers.Folder{
 			Name: *item.Prefix,
-			Url:  c.Echo().URI(handlers.ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
+			Url:  c.Echo().URI(base_handlers.ListFolderObjects, bucket, strings.Replace(*item.Prefix, "/", ":", -1)),
 		}
 	}
 
@@ -168,7 +169,7 @@ func (h Handler) ListBuckets(c echo.Context) error {
 	for _, item := range resp.Buckets {
 		buckets.Buckets = append(buckets.Buckets, handlers.Bucket{
 			Name: *item.Name,
-			Url:  c.Echo().URI(handlers.ListBaseObjects, *item.Name, ""),
+			Url:  c.Echo().URI(base_handlers.ListBaseObjects, *item.Name, ""),
 		})
 	}
 	return c.Render(http.StatusOK, "buckets.html", buckets)

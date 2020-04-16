@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/labstack/echo"
-	"main/config"
 	"strings"
 )
 
@@ -48,30 +47,12 @@ func GetFileType(fileName string) string {
 	return result[len(result)-1]
 }
 
-func ListBaseObjects(c echo.Context) error {
-	return config.Conf.Provider.ListBaseObjects(c)
-}
-
-func ListFolderObjects(c echo.Context) error {
-	return config.Conf.Provider.ListFolderObjects(c)
-}
-
-func ListBuckets(c echo.Context) error {
-	return config.Conf.Provider.ListBuckets(c)
-}
-
-func CreateBucket(c echo.Context) error {
-	return config.Conf.Provider.CreateBucket(c)
-}
-
-func UploadFileToBucket(c echo.Context) error {
-	return config.Conf.Provider.UploadFileToBucket(c)
-}
-
-func DeleteBuckets(c echo.Context) error {
-	return config.Conf.Provider.DeleteBuckets(c)
-}
-
-func DeleteObjects(c echo.Context) error {
-	return config.Conf.Provider.DeleteObjects(c)
+type Handler interface {
+	ListBaseObjects(c echo.Context) error
+	ListFolderObjects(c echo.Context) error
+	ListBuckets(c echo.Context) error
+	CreateBucket(c echo.Context) error
+	UploadFileToBucket(c echo.Context) error
+	DeleteBuckets(c echo.Context) error
+	DeleteObjects(c echo.Context) error
 }
