@@ -305,21 +305,21 @@ jQuery(document).ready(function ($) {
 			window.console && console.log(m) || alert(m);
 		},
 		items: {
-			"rename": {name: "Rename", icon: "edit"},
-			"move": {name: "Move", icon: "paste"},
-			"copy": {name: "Copy", icon: "copy"},
+			// "rename": {name: "Rename", icon: "edit"},
+			// "move": {name: "Move", icon: "paste"},
+			// "copy": {name: "Copy", icon: "copy"},
 			"delete": {name: "Delete", icon: "delete", callback: deleteItem},
             "download": {name: "Download", icon: "download", callback: function (key, options) {
                     download_item.attr("href", options.$trigger[0].dataset.url);
                     download_item[0].click()
                 }},
 			"sep1": "---------",
-			"move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
-					return $(document).find(".photo-item-checkbox:checked").length <= 1;
-				}},
-			"copy_selected": {name: "Copy selected items", icon: "copy", disabled: function () {
-					return $(document).find(".photo-item-checkbox:checked").length <= 1;
-				}},
+			// "move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
+			// 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+			// 	}},
+			// "copy_selected": {name: "Copy selected items", icon: "copy", disabled: function () {
+			// 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+			// 	}},
 			"delete_selected": {name: "Delete selected items", icon:"delete", disabled: function () {
 					return $(document).find(".photo-item-checkbox:checked").length <= 1;
 				}, callback: deleteItems},
@@ -387,10 +387,10 @@ jQuery(document).ready(function ($) {
 			window.console && console.log(m) || alert(m);
 		},
 		items: {
-			"rename": {name: "Rename bucket", icon: "edit"},
+			// "rename": {name: "Rename bucket", icon: "edit"},
 			"delete": {name: "Delete bucket", icon: "delete", callback: deleteBucket},
 			"sep1": "---------",
-			"duplicate": {name: "Duplicate bucket", icon: "copy"},
+			// "duplicate": {name: "Duplicate bucket", icon: "copy"},
 			"delete_selected": {name: "Delete selected buckets", icon:"delete", disabled: function () {
 					return $(document).find(".bucket-item-checkbox:checked").length <= 1;
 				}, callback: deleteBuckets},
