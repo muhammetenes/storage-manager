@@ -50,6 +50,7 @@ func GetFileType(fileName string) string {
 type Handler interface {
 	ListBaseObjects(c echo.Context) error
 	ListFolderObjects(c echo.Context) error
+	ListObjectsWithKey(c echo.Context) error
 	ListBuckets(c echo.Context) error
 	CreateBucket(c echo.Context) error
 	UploadFileToBucket(c echo.Context) error
