@@ -13,6 +13,10 @@ func ListFolderObjects(c echo.Context) error {
 	return config.Conf.Provider.ListFolderObjects(c)
 }
 
+func ListObjectsWithKey(c echo.Context) error {
+	return config.Conf.Provider.ListObjectsWithKey(c)
+}
+
 func ListBuckets(c echo.Context) error {
 	return config.Conf.Provider.ListBuckets(c)
 }
