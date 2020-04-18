@@ -28,11 +28,11 @@ type Folder struct {
 }
 
 type ListObjectsResult struct {
-	Bucket            Bucket
-	Objects           []Object
-	Folders           []Folder
-	Count             int
-	PreviousFolderUrl string
+	Bucket            Bucket   `json:"bucket"`
+	Objects           []Object `json:"objects"`
+	Folders           []Folder `json:"folders"`
+	Count             int      `json:"count"`
+	PreviousFolderUrl string   `json:"prevision_folder_url"`
 }
 
 type ListBucketsResult struct {
