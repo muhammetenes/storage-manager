@@ -32,7 +32,7 @@ type ListObjectsResult struct {
 	Objects           []Object `json:"objects"`
 	Folders           []Folder `json:"folders"`
 	Count             int      `json:"count"`
-	PreviousFolderUrl string   `json:"prevision_folder_url"`
+	PreviousFolderUrl string   `json:"previous_folder_url"`
 }
 
 type ListBucketsResult struct {
