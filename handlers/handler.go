@@ -10,12 +10,6 @@ type JsonResponse struct {
 	Message string `json:"message"`
 }
 
-type ObjectsJsonResponse struct {
-	Error   bool     `json:"error"`
-	Message string   `json:"message"`
-	Objects []Object `json:"objects"`
-}
-
 type Bucket struct {
 	Name   string
 	Prefix string
