@@ -150,6 +150,67 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 	return c.Render(http.StatusOK, "album.html", result)
 }
 
+func (h Handler) ListObjectsWithKey(c echo.Context) error {
+	svc := s3.New(getSession())
+	bucket := c.ParamValues()[0]
+	folderKey := c.QueryParam("folder_key")
+	lastKey := c.QueryParam("last_key")
+	var result = new(handlers.ListObjectsResult)
+	result.Bucket = handlers.Bucket{
+		Name:   bucket,
+		Prefix: folderKey,
+		Url:    bucket,
+	}
+	result.PreviousFolderUrl = getPreviousUrl(folderKey, c, bucket)
+	// Get objects
+	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket:     aws.String(bucket),
+		MaxKeys:    aws.Int64(100),
+		Delimiter:  aws.String("/"),
+		Prefix:     aws.String(folderKey),
+		StartAfter: aws.String(lastKey),
+	})
+	if err != nil {
+		return c.JSON(http.StatusOK, result)
+	}
+
+	// Adding folders
+	result.Folders = make([]handlers.Folder, len(resp.CommonPrefixes))
+	for i, item := range resp.CommonPrefixes {
+		result.Folders[i] = handlers.Folder{
+			Name: *item.Prefix,
+			Url:  c.Echo().URI(base_handlers.ListFolderObjects, bucket, ""),
+		}
+	}
+
+	// Adding object count
+	result.Count = len(resp.Contents)
+	// Adding objects
+	result.Objects = make([]handlers.Object, result.Count)
+	for i, item := range resp.Contents[1:] {
+		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(*item.Key),
+		})
+		fileType := handlers.GetFileType(*item.Key)
+		fileTypeIsValid := false
+		for _, val := range handlers.ValidFileType {
+			if fileType == val {
+				fileTypeIsValid = true
+				break
+			}
+		}
+		urlStr, _ := req.Presign(15 * time.Minute)
+
+		result.Objects[i] = handlers.Object{
+			Name: *item.Key,
+			Url:  urlStr,
+			Type: fileTypeIsValid,
+		}
+	}
+	return c.JSON(http.StatusOK, result)
+}
+
 func (h Handler) ListBuckets(c echo.Context) error {
 	svc := s3.New(getSession())
 	resp, err := svc.ListBuckets(nil)
