@@ -19,7 +19,7 @@ import (
 
 type Handler struct{}
 
-const maxKeys = 2
+const maxKeys = 100
 
 func getSession() *session.Session {
 	sess, _ := session.NewSession(&aws.Config{
