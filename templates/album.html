@@ -108,6 +108,7 @@
 {{ template "scripts.html" }}
 <script type="text/javascript">
   deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
+  nextObjectsUrl = "/{{ .Bucket.Name }}/list_objects_with_key"
   item_count = {{ .Count }};
   folder_key = "{{ .Bucket.Prefix }}";
 
