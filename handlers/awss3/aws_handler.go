@@ -40,7 +40,7 @@ func (h Handler) ListBaseObjects(c echo.Context) error {
 	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:    aws.String(bucket),
-		MaxKeys:   aws.Int64(100),
+		MaxKeys:   aws.Int64(maxKeys),
 		Delimiter: aws.String("/"),
 	})
 	if err != nil {
@@ -105,7 +105,7 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:    aws.String(bucket),
-		MaxKeys:   aws.Int64(100),
+		MaxKeys:   aws.Int64(maxKeys),
 		Delimiter: aws.String("/"),
 		Prefix:    aws.String(folderKey),
 	})
@@ -163,11 +163,10 @@ func (h Handler) ListObjectsWithKey(c echo.Context) error {
 		Prefix: folderKey,
 		Url:    bucket,
 	}
-	result.PreviousFolderUrl = getPreviousUrl(folderKey, c, bucket)
 	// Get objects
 	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket:     aws.String(bucket),
-		MaxKeys:    aws.Int64(100),
+		MaxKeys:    aws.Int64(maxKeys),
 		Delimiter:  aws.String("/"),
 		Prefix:     aws.String(folderKey),
 		StartAfter: aws.String(lastKey),
