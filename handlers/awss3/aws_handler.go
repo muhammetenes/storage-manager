@@ -188,7 +188,7 @@ func (h Handler) ListObjectsWithKey(c echo.Context) error {
 	result.Count = len(resp.Contents)
 	// Adding objects
 	result.Objects = make([]handlers.Object, result.Count)
-	for i, item := range resp.Contents[1:] {
+	for i, item := range resp.Contents {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(*item.Key),
