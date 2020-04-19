@@ -145,6 +145,62 @@
             "  Loading...");
     $("#uploadFileForm").submit();
   })
+
+  function getObjectsBeforeKey(key) {
+    url = nextObjectsUrl + "?last_key=" + key + "&folder_key=" + folder_key
+    is_request_run = true
+    return $.ajax({
+      url: url,
+      method: "get",
+    })
+  }
+
+  is_request_run = false
+  $(window).scroll(function() {
+    if ((($(window).scrollTop() + $(window).height()) >= ($(document).height() - 100)) && !is_request_run) {
+      var last_key = $(".album-item").last()[0].dataset.caption
+      getObjectsBeforeKey(last_key).done(function (response) {
+        if (response.objects.length > 0) {
+          $.each(response.objects, function (i, obj) {
+            if (obj.Type) {
+              var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
+                      '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
+                      '<a href="' + obj.Url + '" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
+                      '<img src="' + obj.Url + '" alt="Image" class="img-fluid">' +
+                      '<div class="photo-text-more">' +
+                      '<div class="photo-text-more">' +
+                      '<h3 class="heading">' + obj.Name + '</h3>' +
+                      '<br><span class="icon icon-search"></span>' +
+                      '</div>' +
+                      '</div>' +
+                      '</a>' +
+                      '</div>';
+            }else {
+              var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
+                      '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
+                      '<a href="/static/file_icon.png" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
+                      '<img src="/static/file_icon.png" alt="Image" class="img-fluid">' +
+                      '<div class="photo-text-more">' +
+                      '<div class="photo-text-more">' +
+                      '<h3 class="heading">' + obj.Name + '</h3>' +
+                      '<br><span class="icon icon-search"></span>' +
+                      '</div>' +
+                      '</div>' +
+                      '</a>' +
+                      '</div>';
+            }
+            $(".align-items-stretch").append(photo_item)
+          })
+          AOS.init({
+            duration: 800,
+            easing: 'slide',
+            once: false
+          });
+          is_request_run = false
+        }
+      })
+    }
+  })
 </script>
 </body>
 </html>
