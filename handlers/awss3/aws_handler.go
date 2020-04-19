@@ -19,6 +19,8 @@ import (
 
 type Handler struct{}
 
+const maxKeys = 2
+
 func getSession() *session.Session {
 	sess, _ := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
