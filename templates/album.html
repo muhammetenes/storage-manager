@@ -157,7 +157,7 @@
 
   is_request_run = false
   $(window).scroll(function() {
-    if ((($(window).scrollTop() + $(window).height()) >= ($(document).height() - 100)) && !is_request_run) {
+    if ((($(window).scrollTop() + $(window).height()) >= ($(document).height() - 500)) && !is_request_run) {
       var last_key = $(".album-item").last()[0].dataset.caption
       getObjectsBeforeKey(last_key).done(function (response) {
         if (response.objects.length > 0) {
