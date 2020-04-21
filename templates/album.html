@@ -6,201 +6,211 @@
 
 <div class="site-wrap">
 
-  <div class="site-mobile-menu">
-    <div class="site-mobile-menu-header">
-      <div class="site-mobile-menu-close mt-3">
-        <span class="icon-close2 js-menu-toggle"></span>
-      </div>
+    <div class="site-mobile-menu">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
     </div>
-    <div class="site-mobile-menu-body"></div>
-  </div>
 
-  {{ template "header.html" }}
-  <main class="main-content">
-    <div class="container-fluid photos">
-      <div class="row pt-4 mb-5 text-center">
-        <div class="col-md-2">
-          {{ if ne .PreviousFolderUrl "" }}<button class="btn btn-primary btn-md text-white" onclick="location.href='{{ .PreviousFolderUrl }}'">< Back</button>{{ end }}
-        </div>
-        <div class="col-8">
-          <h2 class="text-white mb-4">{{ .Bucket.Name  }}/{{ .Bucket.Prefix }} - <span class="object-count">{{ .Count }}</span> Files</h2>
-        </div>
-        <div class="col-md-2">
-          <input type="submit" value="Upload" class="btn btn-primary btn-md text-white" data-toggle="modal" data-target="#UploadFileModal">
-        </div>
-      </div>
+    {{ template "header.html" }}
+    <main class="main-content">
+        <div class="container-fluid photos">
+            <div class="row pt-4 mb-5 text-center">
+                <div class="col-md-2">
+                    {{ if ne .PreviousFolderUrl "" }}
+                    <button class="btn btn-primary btn-md text-white"
+                            onclick="location.href='{{ .PreviousFolderUrl }}'">< Back
+                    </button>{{ end }}
+                </div>
+                <div class="col-8">
+                    <h2 class="text-white mb-4">{{ .Bucket.Name  }}/{{ .Bucket.Prefix }} - <span
+                                class="object-count">{{ .Count }}</span> Files</h2>
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" value="Upload" class="btn btn-primary btn-md text-white" data-toggle="modal"
+                           data-target="#UploadFileModal">
+                </div>
+            </div>
 
-      <div class="row align-items-stretch">
-        {{ range .Folders }}
-          <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
-            <a href="{{ .Url }}" class="d-block photo-item folder-item" data-caption="{{.Name}}">
-              <img src="/static/folder_icon.png" alt="Image" class="img-fluid">
-              <div class="photo-text-more">
-                <div class="photo-text-more">
-                  <h3 class="heading">{{.Name}}</h3>
-                  <br><span class="icon icon-folder"></span>
-                </div>
-              </div>
-            </a>
-          </div>
-        {{ end }}
-        {{ range  .Objects }}
-          {{ if .Type }}
-            <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
-              <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-              <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{ .Name }}">
-                <img src="{{.Url}}" alt="Image" class="img-fluid">
-                <div class="photo-text-more">
-                  <div class="photo-text-more">
-                    <h3 class="heading">{{.Name}}</h3>
-                    <br><span class="icon icon-search"></span>
-                  </div>
-                </div>
-              </a>
+            <div class="row align-items-stretch">
+                {{ range .Folders }}
+                    <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+                        <a href="{{ .Url }}" class="d-block photo-item folder-item" data-caption="{{.Name}}">
+                            <img src="/static/folder_icon.png" alt="Image" class="img-fluid">
+                            <div class="photo-text-more">
+                                <div class="photo-text-more">
+                                    <h3 class="heading">{{.Name}}</h3>
+                                    <br><span class="icon icon-folder"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {{ end }}
+                {{ range  .Objects }}
+                    {{ if .Type }}
+                        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+                            <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
+                            <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item"
+                               data-fancybox="gallery" data-caption="{{ .Name }}">
+                                <img src="{{.Url}}" alt="Image" class="img-fluid">
+                                <div class="photo-text-more">
+                                    <div class="photo-text-more">
+                                        <h3 class="heading">{{.Name}}</h3>
+                                        <br><span class="icon icon-search"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {{ else }}
+                        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+                            <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
+                            <a href="/static/file_icon.png" data-url="{{ .Url }}" class="d-block photo-item album-item"
+                               data-fancybox="gallery" data-caption="{{.Name}}">
+                                <img src="/static/file_icon.png" alt="Image" class="img-fluid">
+                                <div class="photo-text-more">
+                                    <div class="photo-text-more">
+                                        <h3 class="heading">{{.Name}}</h3>
+                                        <br><span class="icon icon-search"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {{ end }}
+                {{ end }}
             </div>
-          {{ else }}
-            <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
-              <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-              <a href="/static/file_icon.png" data-url="{{ .Url }}" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="{{.Name}}">
-                <img src="/static/file_icon.png" alt="Image" class="img-fluid">
-                <div class="photo-text-more">
-                  <div class="photo-text-more">
-                    <h3 class="heading">{{.Name}}</h3>
-                    <br><span class="icon icon-search"></span>
-                  </div>
+            <a id="download-item" target="_blank" href="" download></a>
+            {{ template "footer.html" }}
+        </div>
+    </main>
+    <div class="modal fade" id="UploadFileModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-              </a>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" id="uploadFileForm" action="/{{.Bucket.Name}}/upload_file"
+                          method="post">
+                        <div class="form-group">
+                            <label for="file_input">Files</label>
+                            <input type="text" value="{{ .Bucket.Prefix }}" id="folder_key_input"
+                                   name="folder_key_input" style="display: none">
+                            <input multiple type="file" class="form-control" id="file_input" name="file_input">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="uploadFileButton">Upload</button>
+                </div>
             </div>
-          {{ end }}
-        {{ end }}
-      </div>
-      <a id="download-item" target="_blank" href="" download></a>
-      {{ template "footer.html" }}
+        </div>
     </div>
-  </main>
-  <div class="modal fade" id="UploadFileModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Upload File</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form enctype="multipart/form-data" id="uploadFileForm" action="/{{.Bucket.Name}}/upload_file" method="post">
-            <div class="form-group">
-              <label for="file_input">Files</label>
-              <input type="text" value="{{ .Bucket.Prefix }}" id="folder_key_input" name="folder_key_input" style="display: none">
-              <input multiple type="file" class="form-control" id="file_input" name="file_input">
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="uploadFileButton">Upload</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div> <!-- .site-wrap -->
 {{ template "scripts.html" }}
 <script type="text/javascript">
-  deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
-  nextObjectsUrl = "/{{ .Bucket.Name }}/list_objects_with_key"
-  item_count = {{ .Count }};
-  folder_key = "{{ .Bucket.Prefix }}";
+    deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
+    nextObjectsUrl = "/{{ .Bucket.Name }}/list_objects_with_key"
+    item_count = {{ .Count }};
+    folder_key = "{{ .Bucket.Prefix }}";
 
-  $("#uploadFileForm").submit(function () {
-    var post_url = $(this).attr("action"); //get form action url
-    var request_method = $(this).attr("method"); //get form GET/POST method
-    var form_data = new FormData(this);
-    var uploadFileButton = $("#uploadFileButton");
-    $.ajax({
-      url: post_url,
-      type: request_method,
-      data: form_data,
-      enctype: 'multipart/form-data',
-      processData: false,  // Important!
-      contentType: false,
-      cache: false,
-    }).done(function (response) {
-      $("#modalBody").text(response.message);
-      if (response.error === false) {
-        location.reload()
-      }
-      $("#UploadFileModal").modal("hide");
-      $("#exampleModalCenter").modal("show");
-      uploadFileButton.text("Upload");
-      $("#bucket_name").val("");
-      uploadFileButton.removeAttr("disabled")
-    });
-    return false
-  });
-  $("#uploadFileButton").click(function () {
-    var elem = $(this);
-    elem.attr("disabled", "");
-    elem.html("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>\n" +
-            "  Loading...");
-    $("#uploadFileForm").submit();
-  })
-
-  function getObjectsBeforeKey(key) {
-    url = nextObjectsUrl + "?last_key=" + key + "&folder_key=" + folder_key
-    is_request_run = true
-    return $.ajax({
-      url: url,
-      method: "get",
-    })
-  }
-
-  is_request_run = false
-  $(window).scroll(function() {
-    if ((($(window).scrollTop() + $(window).height()) >= ($(document).height() - 500)) && !is_request_run) {
-      var last_key = $(".album-item").last()[0].dataset.caption
-      getObjectsBeforeKey(last_key).done(function (response) {
-        if (response.objects.length > 0) {
-          $.each(response.objects, function (i, obj) {
-            if (obj.Type) {
-              var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
-                      '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
-                      '<a href="' + obj.Url + '" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
-                      '<img src="' + obj.Url + '" alt="Image" class="img-fluid">' +
-                      '<div class="photo-text-more">' +
-                      '<div class="photo-text-more">' +
-                      '<h3 class="heading">' + obj.Name + '</h3>' +
-                      '<br><span class="icon icon-search"></span>' +
-                      '</div>' +
-                      '</div>' +
-                      '</a>' +
-                      '</div>';
-            }else {
-              var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
-                      '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
-                      '<a href="/static/file_icon.png" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
-                      '<img src="/static/file_icon.png" alt="Image" class="img-fluid">' +
-                      '<div class="photo-text-more">' +
-                      '<div class="photo-text-more">' +
-                      '<h3 class="heading">' + obj.Name + '</h3>' +
-                      '<br><span class="icon icon-search"></span>' +
-                      '</div>' +
-                      '</div>' +
-                      '</a>' +
-                      '</div>';
+    $("#uploadFileForm").submit(function () {
+        var post_url = $(this).attr("action"); //get form action url
+        var request_method = $(this).attr("method"); //get form GET/POST method
+        var form_data = new FormData(this);
+        var uploadFileButton = $("#uploadFileButton");
+        $.ajax({
+            url: post_url,
+            type: request_method,
+            data: form_data,
+            enctype: 'multipart/form-data',
+            processData: false,  // Important!
+            contentType: false,
+            cache: false,
+        }).done(function (response) {
+            $("#modalBody").text(response.message);
+            if (response.error === false) {
+                location.reload()
             }
-            $(".align-items-stretch").append(photo_item)
-          })
-          AOS.init({
-            duration: 800,
-            easing: 'slide',
-            once: false
-          });
-          is_request_run = false
-        }
-      })
+            $("#UploadFileModal").modal("hide");
+            $("#exampleModalCenter").modal("show");
+            uploadFileButton.text("Upload");
+            $("#bucket_name").val("");
+            uploadFileButton.removeAttr("disabled")
+        });
+        return false
+    });
+    $("#uploadFileButton").click(function () {
+        var elem = $(this);
+        elem.attr("disabled", "");
+        elem.html("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>\n" +
+            "  Loading...");
+        $("#uploadFileForm").submit();
+    })
+
+    function getObjectsBeforeKey(key) {
+        url = nextObjectsUrl + "?last_key=" + key + "&folder_key=" + folder_key
+        is_request_run = true
+        return $.ajax({
+            url: url,
+            method: "get",
+        })
     }
-  })
+
+    is_request_run = false
+    $(window).scroll(function () {
+        if ((($(window).scrollTop() + $(window).height()) >= ($(document).height() - 500)) && !is_request_run) {
+            var last_key = $(".album-item").last()[0].dataset.caption
+            getObjectsBeforeKey(last_key).done(function (response) {
+                if (response.objects.length > 0) {
+                    $.each(response.objects, function (i, obj) {
+                        if (obj.Type) {
+                            var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
+                                '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
+                                '<a href="' + obj.Url + '" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
+                                '<img src="' + obj.Url + '" alt="Image" class="img-fluid">' +
+                                '<div class="photo-text-more">' +
+                                '<div class="photo-text-more">' +
+                                '<h3 class="heading">' + obj.Name + '</h3>' +
+                                '<br><span class="icon icon-search"></span>' +
+                                '</div>' +
+                                '</div>' +
+                                '</a>' +
+                                '</div>';
+                        } else {
+                            var photo_item = '<div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">' +
+                                '<div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>' +
+                                '<a href="/static/file_icon.png" data-url="' + obj.Url + '" class="d-block photo-item album-item" data-fancybox="gallery" data-caption="' + obj.Name + '">' +
+                                '<img src="/static/file_icon.png" alt="Image" class="img-fluid">' +
+                                '<div class="photo-text-more">' +
+                                '<div class="photo-text-more">' +
+                                '<h3 class="heading">' + obj.Name + '</h3>' +
+                                '<br><span class="icon icon-search"></span>' +
+                                '</div>' +
+                                '</div>' +
+                                '</a>' +
+                                '</div>';
+                        }
+                        $(".align-items-stretch").append(photo_item)
+                    })
+                    AOS.init({
+                        duration: 800,
+                        easing: 'slide',
+                        once: false
+                    });
+                    is_request_run = false
+                }
+            })
+        }
+    })
+
 </script>
 </body>
 </html>
