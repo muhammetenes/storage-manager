@@ -17,6 +17,10 @@ func ListObjectsWithKey(c echo.Context) error {
 	return config.Conf.Provider.ListObjectsWithKey(c)
 }
 
+func CreateFolder(c echo.Context) error {
+	return config.Conf.Provider.CreateBucket(c)
+}
+
 func ListBuckets(c echo.Context) error {
 	return config.Conf.Provider.ListBuckets(c)
 }
