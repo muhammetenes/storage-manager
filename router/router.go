@@ -22,7 +22,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func New() *echo.Echo {
 	t := &Template{
-		templates: template.Must(template.ParseGlob("/Users/enes/go/src/storage-manager/templates/*.html")),
+		templates: template.Must(template.ParseGlob("./templates/*.html")),
 	}
 	e := echo.New()
 	e.Renderer = t
