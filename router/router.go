@@ -57,6 +57,7 @@ func New() *echo.Echo {
 	e.GET("/:bucket/list_objects", base_handlers.ListBaseObjects)
 	e.GET("/:bucket/list_objects_with_key", base_handlers.ListObjectsWithKey)
 	e.GET("/:bucket/list_objects/:key", base_handlers.ListFolderObjects)
+	e.POST("/:bucket/list_objects/:key/create_folder", base_handlers.CreateFolder)
 	e.POST("/:bucket/upload_file", base_handlers.UploadFileToBucket)
 
 	e.POST("/delete_buckets", base_handlers.DeleteBuckets)
