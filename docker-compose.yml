@@ -3,6 +3,6 @@ services:
   web:
     build: .
     ports:
-      - "1323:1324"
+      - "1323:1323"
   redis:
     image: "golang:1.14.2-alpine3.11"
