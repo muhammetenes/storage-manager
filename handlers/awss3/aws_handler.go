@@ -152,6 +152,26 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 	return c.Render(http.StatusOK, "album.html", result)
 }
 
+func (h Handler) CreateFolder(c echo.Context) error {
+	svc := s3.New(getSession())
+	newFolderName := c.FormValue("new_folder_name")
+	folderName := c.FormValue("folder_name")
+	bucket := c.ParamValues()[0]
+
+	// Folder create
+	_, err := svc.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(folderName + newFolderName + "/"),
+	})
+	if err != nil {
+		if awsErr, ok := err.(awserr.RequestFailure); ok {
+			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
+		}
+	}
+	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Success"})
+
+}
+
 func (h Handler) ListObjectsWithKey(c echo.Context) error {
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
