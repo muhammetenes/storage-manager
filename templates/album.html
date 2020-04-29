@@ -35,7 +35,7 @@
                 </div>
                 <div class="col-md-2">
                     <input type="submit" value="Create Folder" class="btn btn-primary btn-md text-white" data-toggle="modal"
-                           data-target="#UploadFileModal">
+                           data-target="#createFolderModal">
                 </div>
             </div>
 
@@ -89,6 +89,7 @@
             {{ template "footer.html" }}
         </div>
     </main>
+
     <div class="modal fade" id="UploadFileModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -117,12 +118,40 @@
         </div>
     </div>
 
+    <div class="modal fade" id="createFolderModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Folder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createFolderForm" action="/{{.Bucket.Name}}/create_folder" method="post">
+                        <div class="form-group">
+                            <label for="new_folder_name">Folder Name</label>
+                            <input type="text" value="{{ .Bucket.Prefix }}" id="folder_name_id"
+                                   name="folder_name" style="display: none">
+                            <input type="text" id="new_folder_name_id" name="new_folder_name" class="form-control text-black">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="createFolderButton">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div> <!-- .site-wrap -->
 {{ template "scripts.html" }}
 
 <script type="text/javascript">
     deleteItemUrl = "/{{ .Bucket.Name }}/delete_objects";
-    nextObjectsUrl = "/{{ .Bucket.Name }}/list_objects_with_key"
+    nextObjectsUrl = "/{{ .Bucket.Name }}/list_objects_with_key";
+    createFolderUrl = "/{{ .Bucket.Name }}/create_folder";
     item_count = {{ .Count }};
     folder_key = "{{ .Bucket.Prefix }}";
 </script>
