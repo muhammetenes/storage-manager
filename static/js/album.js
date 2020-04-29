@@ -1,3 +1,5 @@
+// File upload
+
 $("#uploadFileForm").submit(function () {
     var post_url = $(this).attr("action"); //get form action url
     var request_method = $(this).attr("method"); //get form GET/POST method
@@ -32,6 +34,18 @@ $("#uploadFileButton").click(function () {
     $("#uploadFileForm").submit();
 })
 
+
+// Create Folder
+$("#createFolderButton").click(function () {
+    var elem = $(this);
+    elem.attr("disabled", "");
+    elem.html("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>\n" +
+        "  Loading...");
+    $("#createFolderForm").submit();
+})
+
+
+// Pagination
 function getObjectsBeforeKey(key) {
     url = nextObjectsUrl + "?last_key=" + key + "&folder_key=" + folder_key
     is_request_run = true
