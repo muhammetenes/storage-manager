@@ -54,6 +54,7 @@ type Handler interface {
 	ListBuckets(c echo.Context) error
 	CreateBucket(c echo.Context) error
 	UploadFileToBucket(c echo.Context) error
+	CreateFolder(c echo.Context) error
 	DeleteBuckets(c echo.Context) error
 	DeleteObjects(c echo.Context) error
 }
