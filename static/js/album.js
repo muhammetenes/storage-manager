@@ -43,6 +43,32 @@ $("#createFolderButton").click(function () {
         "  Loading...");
     $("#createFolderForm").submit();
 })
+$("#createFolderForm").submit(function () {
+    var post_url = $(this).attr("action"); //get form action url
+    var request_method = $(this).attr("method"); //get form GET/POST method
+    var form_data = new FormData(this);
+    var createFolderButton = $("#createFolderButton");
+    $.ajax({
+        url: post_url,
+        type: request_method,
+        data: form_data,
+        processData: false,  // Important!
+        contentType: false,
+        cache: false,
+    }).done(function (response) {
+        $("#modalBody").text(response.message);
+        if (response.error === false) {
+            location.reload()
+        }
+        $("#createFolderModal").modal("hide");
+        $("#exampleModalCenter").modal("show");
+        createFolderButton.text("Upload");
+        $("#bucket_name").val("");
+        createFolderButton.removeAttr("disabled")
+    });
+    return false
+});
+
 
 
 // Pagination
