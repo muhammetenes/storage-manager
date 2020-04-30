@@ -1,5 +1,4 @@
 // File upload
-
 $("#uploadFileForm").submit(function () {
     var post_url = $(this).attr("action"); //get form action url
     var request_method = $(this).attr("method"); //get form GET/POST method
