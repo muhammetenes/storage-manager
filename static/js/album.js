@@ -126,3 +126,93 @@ $(window).scroll(function () {
         })
     }
 })
+
+function deleteItemsRequest(keys) {
+    return $.ajax({
+        url: deleteItemUrl,
+        method: "post",
+        data: {
+            keys: keys
+        }
+    })
+}
+
+function deleteItem(key, options) {
+    var photo_item = $(options["$trigger"][0]).parent();
+    var itemKey = options["$trigger"][0].dataset.caption;
+    deleteItemsRequest(itemKey.split()).done(function (response) {
+        $("#modalBody").text(response.message);
+        $("#exampleModalCenter").modal("show");
+        if (!response.error){
+            photo_item.remove();
+            item_count--
+        }
+        $(".object-count").text(item_count)
+    });
+}
+
+function deleteItems(key, options) {
+    var itemKeys = $(".photo-item-checkbox:checked");
+    var keys = [];
+    var photo_items = [];
+    $.each(itemKeys, function (index, elem) {
+        var photo_item = $(elem).parent().parent();
+        var key = photo_item.children("a")[0].dataset.caption;
+        keys.push(key);
+        photo_items.push(photo_item)
+    });
+    deleteItemsRequest(keys).done(function (response) {
+        $("#modalBody").text(response.message);
+        $("#exampleModalCenter").modal("show");
+        if (!response.error){
+            $.each(photo_items, function (index, elem) {
+                elem.remove();
+            });
+            AOS.init({
+                duration: 800,
+                easing: 'slide',
+                once: false
+            });
+            item_count -= photo_items.length
+        }
+        $(".object-count").text(item_count)
+    })
+}
+// album.html page context menu
+var download_item = $("#download-item")
+$.contextMenu({
+    selector: '.album-item',
+    callback: function(key, options) {
+        var m = "clicked: " + key;
+        window.console && console.log(m) || alert(m);
+    },
+    items: {
+        // "rename": {name: "Rename", icon: "edit"},
+        // "move": {name: "Move", icon: "paste"},
+        // "copy": {name: "Copy", icon: "copy"},
+        "delete": {name: "Delete", icon: "delete", callback: deleteItem},
+        "download": {name: "Download", icon: "download", callback: function (key, options) {
+                download_item.attr("href", options.$trigger[0].dataset.url);
+                download_item[0].click()
+            }},
+        "sep1": "---------",
+        // "move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
+        // 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        // 	}},
+        // "copy_selected": {name: "Copy selected items", icon: "copy", disabled: function () {
+        // 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        // 	}},
+        "delete_selected": {name: "Delete selected items", icon:"delete", disabled: function () {
+                return $(document).find(".photo-item-checkbox:checked").length <= 1;
+            }, callback: deleteItems},
+        "download_selected": {name: "Download selected items", icon: "download", disabled: function () {
+                return $(document).find(".photo-item-checkbox:checked").length <= 1;
+            }, callback:function (key, options) {
+                $.each($(document).find(".photo-item-checkbox:checked"), function (i, elem) {
+                    var data_url = $(elem).parent().parent().children("a")[0].dataset.url
+                    download_item.attr("href", data_url);
+                    download_item[0].click()
+                })
+            }}
+    }
+});
