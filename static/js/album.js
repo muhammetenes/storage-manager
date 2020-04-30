@@ -216,3 +216,37 @@ $.contextMenu({
             }}
     }
 });
+
+// Folder context menu
+$.contextMenu({
+    selector: '.folder-item',
+    callback: function(key, options) {
+        var m = "clicked: " + key;
+        window.console && console.log(m) || alert(m);
+    },
+    items: {
+        // "rename": {name: "Rename", icon: "edit"},
+        // "move": {name: "Move", icon: "paste"},
+        // "copy": {name: "Copy", icon: "copy"},
+        "delete": {name: "Delete", icon: "delete"},
+        // "sep1": "---------",
+        // "move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
+        // 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        // 	}},
+        // "copy_selected": {name: "Copy selected items", icon: "copy", disabled: function () {
+        // 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        // 	}},
+        // "delete_selected": {name: "Delete selected items", icon:"delete", disabled: function () {
+        //         return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        //     }, callback: deleteItems},
+        // "download_selected": {name: "Download selected items", icon: "download", disabled: function () {
+        //         return $(document).find(".photo-item-checkbox:checked").length <= 1;
+        //     }, callback:function (key, options) {
+        //         $.each($(document).find(".photo-item-checkbox:checked"), function (i, elem) {
+        //             var data_url = $(elem).parent().parent().children("a")[0].dataset.url
+        //             download_item.attr("href", data_url);
+        //             download_item[0].click()
+        //         })
+        //     }}
+    }
+});
