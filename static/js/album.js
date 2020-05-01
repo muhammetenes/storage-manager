@@ -127,6 +127,7 @@ $(window).scroll(function () {
     }
 })
 
+// ------ PHOTO ------
 function deleteItemsRequest(keys) {
     return $.ajax({
         url: deleteItemUrl,
@@ -178,7 +179,8 @@ function deleteItems(key, options) {
         $(".object-count").text(item_count)
     })
 }
-// album.html page context menu
+
+// Photo context menu
 var download_item = $("#download-item")
 $.contextMenu({
     selector: '.album-item',
@@ -216,6 +218,8 @@ $.contextMenu({
             }}
     }
 });
+
+// ------ FOLDER ------
 
 // Folder context menu
 $.contextMenu({
