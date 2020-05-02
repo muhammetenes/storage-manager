@@ -222,7 +222,7 @@ $.contextMenu({
 // ------ FOLDER ------
 function deleteFoldersRequest(keys) {
     return $.ajax({
-        url: deleteItemUrl,
+        url: deleteFolderUrl,
         method: "post",
         data: {
             keys: keys
