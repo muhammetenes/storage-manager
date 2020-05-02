@@ -220,6 +220,30 @@ $.contextMenu({
 });
 
 // ------ FOLDER ------
+function deleteFoldersRequest(keys) {
+    return $.ajax({
+        url: deleteItemUrl,
+        method: "post",
+        data: {
+            keys: keys
+        }
+    })
+}
+
+function deleteFolder(key, options) {
+    var photo_item = $(options["$trigger"][0]).parent();
+    var itemKey = options["$trigger"][0].dataset.caption;
+    deleteFoldersRequest(itemKey.split()).done(function (response) {
+        $("#modalBody").text(response.message);
+        $("#exampleModalCenter").modal("show");
+        if (!response.error){
+            photo_item.remove();
+            item_count--
+        }
+        $(".object-count").text(item_count)
+    });
+}
+
 
 // Folder context menu
 $.contextMenu({
@@ -232,7 +256,7 @@ $.contextMenu({
         // "rename": {name: "Rename", icon: "edit"},
         // "move": {name: "Move", icon: "paste"},
         // "copy": {name: "Copy", icon: "copy"},
-        "delete": {name: "Delete", icon: "delete"},
+        "delete": {name: "Delete", icon: "delete", callback: deleteFolder},
         // "sep1": "---------",
         // "move_selected": {name: "Move selected items", icon: "paste", disabled: function () {
         // 		return $(document).find(".photo-item-checkbox:checked").length <= 1;
