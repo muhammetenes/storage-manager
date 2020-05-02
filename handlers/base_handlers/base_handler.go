@@ -40,3 +40,7 @@ func DeleteBuckets(c echo.Context) error {
 func DeleteObjects(c echo.Context) error {
 	return config.Conf.Provider.DeleteObjects(c)
 }
+
+func DeleteFolders(c echo.Context) error {
+	return config.Conf.Provider.DeleteFolders(c)
+}
