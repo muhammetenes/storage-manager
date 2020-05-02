@@ -62,6 +62,7 @@ func New() *echo.Echo {
 
 	e.POST("/delete_buckets", base_handlers.DeleteBuckets)
 	e.POST("/:bucket/delete_objects", base_handlers.DeleteObjects)
+	e.POST("/:bucket/delete_folders", base_handlers.DeleteFolders)
 
 	return e
 }
