@@ -400,27 +400,18 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 func (h Handler) DeleteFolders(c echo.Context) error {
 	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]
-	otd := getObjectsToDelete(keys)
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
-	_, err := svc.DeleteObjects(&s3.DeleteObjectsInput{
-		Bucket: aws.String(bucket),
-		Delete: &s3.Delete{
-			Objects: otd,
-		},
-	})
-	if err != nil {
-		if awsErr, ok := err.(awserr.RequestFailure); ok {
-			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
-		}
-	}
-	err = svc.WaitUntilObjectNotExists(&s3.HeadObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(keys[len(keys)-1]),
-	})
-	if err != nil {
-		if awsErr, ok := err.(awserr.RequestFailure); ok {
-			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
+	for _, key := range keys {
+		iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
+			Bucket: aws.String(bucket),
+			Prefix: aws.String(key),
+		})
+
+		if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
+			if awsErr, ok := err.(awserr.RequestFailure); ok {
+				return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
+			}
 		}
 	}
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders Deleted"})
