@@ -414,5 +414,5 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 			}
 		}
 	}
-	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders Deleted"})
+	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders deleted"})
 }
