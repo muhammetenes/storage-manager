@@ -398,7 +398,7 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 }
 
 func (h Handler) DeleteFolders(c echo.Context) error {
-	//_ = c.FormValue("keys[]")
+	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
