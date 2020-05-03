@@ -394,7 +394,7 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
 		}
 	}
-	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects Deleted"})
+	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects deleted"})
 }
 
 func (h Handler) DeleteFolders(c echo.Context) error {
