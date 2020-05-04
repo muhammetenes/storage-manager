@@ -70,7 +70,7 @@ $("#createFolderForm").submit(function () {
 
 
 
-// Pagination
+// ------ PAGINATION ------
 function getObjectsBeforeKey(key) {
     url = nextObjectsUrl + "?last_key=" + key + "&folder_key=" + folder_key
     is_request_run = true
@@ -126,6 +126,8 @@ $(window).scroll(function () {
         })
     }
 })
+// ------ PAGINATION-END ------
+
 
 // ------ PHOTO ------
 function deleteItemsRequest(keys) {
@@ -219,6 +221,8 @@ $.contextMenu({
     }
 });
 
+// ------ PHOTO-END ------
+
 // ------ FOLDER ------
 function deleteFoldersRequest(keys) {
     return $.ajax({
@@ -256,3 +260,5 @@ $.contextMenu({
         "delete": {name: "Delete", icon: "delete", callback: deleteFolder}
     }
 });
+
+// ------ FOLDER-END ------
