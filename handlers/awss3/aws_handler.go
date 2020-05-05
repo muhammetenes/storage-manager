@@ -402,17 +402,23 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	keys := c.Request().Form["keys[]"]
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
+	done := make(chan bool, len(keys))
 	for _, key := range keys {
-		iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
-			Bucket: aws.String(bucket),
-			Prefix: aws.String(key),
-		})
-
-		if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
-			if awsErr, ok := err.(awserr.RequestFailure); ok {
-				return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
+		go func(bucket string, key string) {
+			iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
+				Bucket: aws.String(bucket),
+				Prefix: aws.String(key),
+			})
+			if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
+				done <- false
+				return
 			}
-		}
+			done <- true
+			return
+		}(bucket, key)
+	}
+	for i := 0; i < len(keys); i++ {
+		<-done
 	}
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders deleted"})
 }
