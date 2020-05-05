@@ -294,7 +294,6 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 				if _, ok := err.(awserr.RequestFailure); ok {
 					done <- false
 					return
-					//return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
 				}
 			}
 			defer src.Close()
