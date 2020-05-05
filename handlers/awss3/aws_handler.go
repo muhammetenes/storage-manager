@@ -336,7 +336,6 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 				if _, ok := err.(awserr.RequestFailure); ok {
 					done <- false
 					return
-					//return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
 				}
 			}
 			err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
