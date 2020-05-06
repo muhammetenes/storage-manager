@@ -327,8 +327,10 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	_ = c.FormValue("buckets[]")
 	buckets := c.Request().Form["buckets[]"]
 	done := make(chan bool, len(buckets))
+	var wg sync.WaitGroup
 	for _, bucket := range buckets {
-		go func(bucket string) {
+		go func(bucket string, wg *sync.WaitGroup) {
+			wg.Add(1)
 			_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
 				Bucket: aws.String(bucket),
 			})
@@ -348,11 +350,10 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 				}
 			}
 			done <- true
-		}(bucket)
+			wg.Done()
+		}(bucket, &wg)
 	}
-	for i := 0; i < len(buckets); i++ {
-		<-done
-	}
+	wg.Wait()
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Success"})
 }
 
