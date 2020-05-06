@@ -415,6 +415,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 				return
 			}
 			done <- true
+			wg.Done()
 			return
 		}(bucket, key, &wg)
 	}
