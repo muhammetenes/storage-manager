@@ -14,6 +14,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -285,10 +286,12 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	bucket := c.ParamValues()[0]
 	folder_key := form.Value["folder_key_input"]
 	files := form.File["file_input"]
+	var wg sync.WaitGroup
 	done := make(chan bool, len(files))
 	for _, file := range files {
 		// Source
-		go func(file *multipart.FileHeader) {
+		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
+			wg.Add(1)
 			src, err := file.Open()
 			if err != nil {
 				if _, ok := err.(awserr.RequestFailure); ok {
@@ -312,11 +315,10 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 				}
 			}
 			done <- true
-		}(file)
+			wg.Done()
+		}(file, &wg)
 	}
-	for i := 0; i < len(files); i++ {
-		<-done
-	}
+	wg.Wait()
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Success"})
 }
 
@@ -413,8 +415,6 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 			return
 		}(bucket, key)
 	}
-	for i := 0; i < len(keys); i++ {
-		<-done
-	}
+	wg.Wait()
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders deleted"})
 }
