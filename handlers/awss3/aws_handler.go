@@ -401,9 +401,11 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	keys := c.Request().Form["keys[]"]
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
+	var wg sync.WaitGroup
 	done := make(chan bool, len(keys))
 	for _, key := range keys {
-		go func(bucket string, key string) {
+		go func(bucket string, key string, wg *sync.WaitGroup) {
+			wg.Add(1)
 			iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
 				Bucket: aws.String(bucket),
 				Prefix: aws.String(key),
@@ -414,7 +416,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 			}
 			done <- true
 			return
-		}(bucket, key)
+		}(bucket, key, &wg)
 	}
 	wg.Wait()
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Folders deleted"})
