@@ -10,6 +10,12 @@ type JsonResponse struct {
 	Message string `json:"message"`
 }
 
+type DetailedJsonResponse struct {
+	Error   bool     `json:"error"`
+	Message string   `json:"message"`
+	Failed  []string `json:"failed"`
+}
+
 type Bucket struct {
 	Name   string
 	Prefix string
