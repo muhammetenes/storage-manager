@@ -291,7 +291,7 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	errors := make(chan string, len(files))
 	wg.Add(len(files))
 	for _, file := range files {
-		// Source
+		// Upload file func
 		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
 			src, err := file.Open()
 			if err != nil {
