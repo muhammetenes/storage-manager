@@ -414,6 +414,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	wg.Add(len(keys))
 	errors := make(chan string, len(keys))
 	for _, key := range keys {
+		// Delete folder func
 		go func(bucket string, key string, wg *sync.WaitGroup) {
 			iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
 				Bucket: aws.String(bucket),
