@@ -286,20 +286,22 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	bucket := c.ParamValues()[0]
 	folder_key := form.Value["folder_key_input"]
 	files := form.File["file_input"]
+	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
 	var wg sync.WaitGroup
-	done := make(chan bool, len(files))
+	errors := make(chan string, len(files))
+	wg.Add(len(files))
 	for _, file := range files {
 		// Source
 		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
-			wg.Add(1)
 			src, err := file.Open()
 			if err != nil {
 				if _, ok := err.(awserr.RequestFailure); ok {
-					done <- false
+					errors <- file.Filename
 					return
 				}
 			}
 			defer src.Close()
+			defer wg.Done()
 
 			// Copy
 			uploader := s3manager.NewUploader(sess)
@@ -310,16 +312,18 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 			})
 			if err != nil {
 				if _, ok := err.(awserr.RequestFailure); ok {
-					done <- false
+					errors <- file.Filename
 					return
 				}
 			}
-			done <- true
-			wg.Done()
 		}(file, &wg)
 	}
 	wg.Wait()
-	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Success"})
+	close(errors)
+	for e := range errors {
+		response.Failed = append(response.Failed, e)
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h Handler) DeleteBuckets(c echo.Context) error {
