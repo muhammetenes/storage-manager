@@ -335,6 +335,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	var wg sync.WaitGroup
 	wg.Add(len(buckets))
 	for _, bucket := range buckets {
+		// Delete bucket func
 		go func(bucket string, wg *sync.WaitGroup) {
 			_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
 				Bucket: aws.String(bucket),
