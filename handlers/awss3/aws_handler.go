@@ -359,6 +359,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 		}(bucket, &wg)
 	}
 	wg.Wait()
+	close(errors)
 	for e := range errors {
 		response.Failed = append(response.Failed, e)
 	}
