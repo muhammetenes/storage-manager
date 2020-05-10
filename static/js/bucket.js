@@ -28,7 +28,6 @@ $("#createBucketButton").click(function () {
     $("#createBucketForm").submit();
 })
 
-// BUCKET AREA
 function deleteBucketsRequest(buckets) {
     return $.ajax({
         url: deleteBucketsUrl,
@@ -72,7 +71,7 @@ function deleteBuckets(key, options) {
     })
 }
 
-// bucket.html page context menu
+// CONTEXT MENU
 $.contextMenu({
     selector: '.bucket-item',
     callback: function(key, options) {
