@@ -249,6 +249,31 @@ function deleteFolder(key, options) {
     });
 }
 
+function deleteFolders(key, options) {
+    var itemKeys = $(".folder-item-checkbox:checked");
+    var keys = [];
+    var folders = [];
+    $.each(itemKeys, function (index, elem) {
+        var folder = $(elem).parent().parent();
+        var key = folder.children("a")[0].dataset.caption;
+        keys.push(key);
+        folders.push(folder)
+    });
+    deleteFoldersRequest(keys).done(function (response) {
+        $("#modalBody").text(response.message);
+        $("#exampleModalCenter").modal("show");
+        if (!response.error){
+            $.each(folders, function (index, elem) {
+                elem.remove();
+            });
+            AOS.init({
+                duration: 800,
+                easing: 'slide',
+                once: false
+            });
+        }
+    })
+}
 
 // Folder context menu
 $.contextMenu({
