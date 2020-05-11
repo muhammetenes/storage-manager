@@ -283,7 +283,10 @@ $.contextMenu({
         window.console && console.log(m) || alert(m);
     },
     items: {
-        "delete": {name: "Delete", icon: "delete", callback: deleteFolder}
+        "delete": {name: "Delete", icon: "delete", callback: deleteFolder},
+        "delete_selected": {name: "Delete selected folders", icon:"delete", disabled: function () {
+                return $(document).find(".folder-item-checkbox:checked").length <= 1;
+            }, callback: deleteFolders},
     }
 });
 
