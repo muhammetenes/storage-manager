@@ -257,6 +257,7 @@ func (h Handler) ListBuckets(c echo.Context) error {
 func (h Handler) CreateBucket(c echo.Context) error {
 	svc := s3.New(getSession())
 	bucketName := c.FormValue("bucket_name")
+	// Create bucket
 	_, err := svc.CreateBucket(&s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
 	})
