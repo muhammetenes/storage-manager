@@ -235,6 +235,7 @@ func (h Handler) ListObjectsWithKey(c echo.Context) error {
 
 func (h Handler) ListBuckets(c echo.Context) error {
 	svc := s3.New(getSession())
+	// List buckets
 	resp, err := svc.ListBuckets(nil)
 	if err != nil {
 		if awsErr, ok := err.(awserr.RequestFailure); ok {
