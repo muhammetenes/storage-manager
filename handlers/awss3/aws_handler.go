@@ -366,6 +366,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+// Create object struct for delete object
 func getObjectsToDelete(keys []string) []*s3.ObjectIdentifier {
 	var objects []*s3.ObjectIdentifier
 	for _, key := range keys {
@@ -394,6 +395,7 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
 		}
 	}
+	// Exists control
 	err = svc.WaitUntilObjectNotExists(&s3.HeadObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(keys[len(keys)-1]),
