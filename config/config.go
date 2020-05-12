@@ -36,24 +36,3 @@ func (c *Config) DestroyConfig() {
 	c.AwsConfig.AwsSecretKey = ""
 	c.AwsConfig.AwsRegion = ""
 }
-
-//func Load(location string) (conf Config, err error) {
-//	var reader io.Reader
-//	// check for http prefix
-//
-//	log.Infof("loading local config (%v)", location)
-//
-//	// check the conf file exists
-//	if _, err := os.Stat(location); os.IsNotExist(err) {
-//		return conf, fmt.Errorf("config file at location (%v) not found!", location)
-//	}
-//	// open the config file
-//	reader, err = os.Open(location)
-//
-//	if err != nil {
-//		return conf, fmt.Errorf("error opening local config file (%v): %v ", location, err)
-//	}
-//	_, err = toml.DecodeReader(reader, &conf)
-//
-//	return conf, err
-//}
