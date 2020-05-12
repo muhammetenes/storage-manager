@@ -382,6 +382,7 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 	otd := getObjectsToDelete(keys)
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
+	// Delete Objects
 	_, err := svc.DeleteObjects(&s3.DeleteObjectsInput{
 		Bucket: aws.String(bucket),
 		Delete: &s3.Delete{
