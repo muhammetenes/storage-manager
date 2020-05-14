@@ -23,7 +23,8 @@
                     {{ if ne .PreviousFolderUrl "" }}
                     <button class="btn btn-primary btn-md text-white"
                             onclick="location.href='{{ .PreviousFolderUrl }}'">< Back
-                    </button>{{ end }}
+                    </button>
+                    {{ end }}
                 </div>
                 <div class="col-6">
                     <h2 class="text-white mb-4">{{ .Bucket.Name  }}/{{ .Bucket.Prefix }} - <span
