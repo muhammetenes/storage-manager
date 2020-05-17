@@ -13,7 +13,7 @@ $("#createBucketForm").submit(function () {
             location.reload()
         }
         $("#createBucketModal").modal("hide");
-        $("#exampleModalCenter").modal("show");
+        $("#infoModal").modal("show");
         createBucketButton.text("Create");
         $("#bucket_name").val("");
         createBucketButton.removeAttr("disabled")
@@ -43,7 +43,7 @@ function deleteBucket(key, options) {
     var bucketKey = options["$trigger"][0].dataset.caption;
     deleteBucketsRequest(bucketKey.split()).done(function (response) {
         $("#modalBody").text(response.message);
-        $("#exampleModalCenter").modal("show");
+        $("#infoModal").modal("show");
         if (!response.error){
             bucket_item.remove();
         }
@@ -62,7 +62,7 @@ function deleteBuckets(key, options) {
     });
     deleteBucketsRequest(keys).done(function (response) {
         $("#modalBody").text(response.message);
-        $("#exampleModalCenter").modal("show");
+        $("#infoModal").modal("show");
         if (!response.error){
             $.each(bucket_items, function (index, elem) {
                 elem.remove();
