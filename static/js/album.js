@@ -159,7 +159,7 @@ $.contextMenu({
         // "move": {name: "Move", icon: "paste"},
         // "copy": {name: "Copy", icon: "copy"},
         "delete": {name: "Delete item", icon: "delete", callback: deleteItem},
-        "download": {name: "Download", icon: "download", callback: function (key, options) {
+        "download": {name: "Download item", icon: "download", callback: function (key, options) {
                 download_item.attr("href", options.$trigger[0].dataset.url);
                 download_item[0].click()
             }},
