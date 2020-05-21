@@ -28,6 +28,7 @@ $("#createBucketButton").click(function () {
     $("#createBucketForm").submit();
 })
 
+// Base delete bucket request
 function deleteBucketsRequest(buckets) {
     return $.ajax({
         url: deleteBucketsUrl,
@@ -37,7 +38,7 @@ function deleteBucketsRequest(buckets) {
         }
     })
 }
-
+// Single delete bucket
 function deleteBucket(key, options) {
     var bucket_item = $(options["$trigger"][0]).parent();
     var bucketKey = options["$trigger"][0].dataset.caption;
@@ -49,7 +50,7 @@ function deleteBucket(key, options) {
         }
     });
 }
-
+// Multible delete buckets
 function deleteBuckets(key, options) {
     var itemKeys = $(".bucket-item-checkbox:checked");
     var keys = [];
