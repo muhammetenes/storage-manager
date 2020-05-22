@@ -224,7 +224,7 @@ $("#createFolderForm").submit(function () {
 });
 
 
-// Delete folder
+// Base delete folder request
 function deleteFoldersRequest(keys) {
     return $.ajax({
         url: deleteFolderUrl,
@@ -234,7 +234,7 @@ function deleteFoldersRequest(keys) {
         }
     })
 }
-
+// Single delete folder
 function deleteFolder(key, options) {
     var photo_item = $(options["$trigger"][0]).parent();
     var itemKey = options["$trigger"][0].dataset.caption;
@@ -248,7 +248,7 @@ function deleteFolder(key, options) {
         $(".object-count").text(item_count)
     });
 }
-
+// Multible delete folders
 function deleteFolders(key, options) {
     var itemKeys = $(".folder-item-checkbox:checked");
     var keys = [];
