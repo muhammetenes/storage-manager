@@ -244,4 +244,9 @@ jQuery(document).ready(function ($) {
     //     ],
     // });
 
+    function showNotification(message) {
+        $("#modalBody").text(message);
+        $("#infoModal").modal("show");
+    }
+
 });
