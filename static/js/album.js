@@ -13,12 +13,11 @@ $("#uploadFileForm").submit(function () {
         contentType: false,
         cache: false,
     }).done(function (response) {
-        $("#modalBody").text(response.message);
         if (response.error === false) {
             location.reload()
         }
         $("#UploadFileModal").modal("hide");
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         uploadFileButton.text("Upload");
         $("#bucket_name").val("");
         uploadFileButton.removeAttr("disabled")
@@ -108,8 +107,7 @@ function deleteItem(key, options) {
     var photo_item = $(options["$trigger"][0]).parent();
     var itemKey = options["$trigger"][0].dataset.caption;
     deleteItemsRequest(itemKey.split()).done(function (response) {
-        $("#modalBody").text(response.message);
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         if (!response.error){
             photo_item.remove();
             item_count--
@@ -129,8 +127,7 @@ function deleteItems(key, options) {
         photo_items.push(photo_item)
     });
     deleteItemsRequest(keys).done(function (response) {
-        $("#modalBody").text(response.message);
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         if (!response.error){
             $.each(photo_items, function (index, elem) {
                 elem.remove();
@@ -210,12 +207,11 @@ $("#createFolderForm").submit(function () {
         contentType: false,
         cache: false,
     }).done(function (response) {
-        $("#modalBody").text(response.message);
         if (response.error === false) {
             location.reload()
         }
         $("#createFolderModal").modal("hide");
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         createFolderButton.text("Upload");
         $("#bucket_name").val("");
         createFolderButton.removeAttr("disabled")
@@ -239,8 +235,7 @@ function deleteFolder(key, options) {
     var photo_item = $(options["$trigger"][0]).parent();
     var itemKey = options["$trigger"][0].dataset.caption;
     deleteFoldersRequest(itemKey.split()).done(function (response) {
-        $("#modalBody").text(response.message);
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         if (!response.error){
             photo_item.remove();
             item_count--
@@ -260,8 +255,7 @@ function deleteFolders(key, options) {
         folders.push(folder)
     });
     deleteFoldersRequest(keys).done(function (response) {
-        $("#modalBody").text(response.message);
-        $("#infoModal").modal("show");
+        showNotification(response.message)
         if (!response.error){
             $.each(folders, function (index, elem) {
                 elem.remove();
