@@ -4,6 +4,11 @@ AOS.init({
     once: false
 });
 
+function showNotification(message) {
+    $("#modalBody").text(message);
+    $("#infoModal").modal("show");
+}
+
 jQuery(document).ready(function ($) {
 
     "use strict";
@@ -243,10 +248,5 @@ jQuery(document).ready(function ($) {
     //         "close"
     //     ],
     // });
-
-    function showNotification(message) {
-        $("#modalBody").text(message);
-        $("#infoModal").modal("show");
-    }
 
 });
