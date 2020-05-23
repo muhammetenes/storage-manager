@@ -30,13 +30,11 @@
                     <h2 class="text-white mb-4">{{ .Bucket.Name  }}/{{ .Bucket.Prefix }} - <span
                                 class="object-count">{{ .Count }}</span> Files</h2>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <input type="submit" value="Upload" class="btn btn-primary btn-md text-white" data-toggle="modal"
-                           data-target="#UploadFileModal">
-                </div>
-                <div class="col-md-2">
+                           data-target="#UploadFileModal" style="border-radius: 30px 5px 5px 30px;">
                     <input type="submit" value="Create Folder" class="btn btn-primary btn-md text-white" data-toggle="modal"
-                           data-target="#createFolderModal">
+                           data-target="#createFolderModal" style="border-radius: 5px 30px 30px 5px;">
                 </div>
             </div>
 
