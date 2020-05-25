@@ -267,6 +267,7 @@ func (h Handler) CreateBucket(c echo.Context) error {
 			return c.JSON(http.StatusOK, handlers.JsonResponse{Error: true, Message: awsErr.Message()})
 		}
 	}
+	// Bucket is exists
 	err = svc.WaitUntilBucketExists(&s3.HeadBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -349,6 +350,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 					return
 				}
 			}
+			// Bucket is delete control
 			err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
 				Bucket: aws.String(bucket),
 			})
