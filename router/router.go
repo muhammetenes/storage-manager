@@ -69,6 +69,15 @@ func New() *echo.Echo {
 
 var WithoutCredentialPage = []string{"/static/*", "", "/login"}
 
+func isWithoutCredentialPage(path string) bool {
+	for _, p := range WithoutCredentialPage {
+		if p == path {
+			return true
+		}
+	}
+	return false
+}
+
 func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		loginRoutePath := c.Echo().URI(login.Login, nil)
