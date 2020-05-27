@@ -70,6 +70,7 @@ func New() *echo.Echo {
 func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		loginRoutePath := c.Echo().URI(login.Login, nil)
+
 		if config.Conf.Status == false && (c.Path() != loginRoutePath && c.Path() != "/static/*" && c.Path() != "") {
 			return c.Redirect(http.StatusFound, loginRoutePath)
 		}
