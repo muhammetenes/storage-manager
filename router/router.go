@@ -67,6 +67,8 @@ func New() *echo.Echo {
 	return e
 }
 
+var WithoutCredentialPage = []string{"/static/*", "", "/login"}
+
 func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		loginRoutePath := c.Echo().URI(login.Login, nil)
