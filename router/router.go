@@ -67,6 +67,11 @@ func New() *echo.Echo {
 	return e
 }
 
+func Redirect404(c echo.Context) error {
+	// render your 404 page
+	return c.Redirect(http.StatusFound, "/login")
+}
+
 func credentialControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		loginRoutePath := c.Echo().URI(login.Login, nil)
