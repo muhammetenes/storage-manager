@@ -68,8 +68,7 @@ func New() *echo.Echo {
 	return e
 }
 
-func Redirect404(c echo.Context) error {
-	// render your 404 page
+func Redirect404ToLogin(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/login")
 }
 
