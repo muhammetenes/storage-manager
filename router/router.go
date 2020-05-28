@@ -24,6 +24,7 @@ func New() *echo.Echo {
 	t := &Template{
 		templates: template.Must(template.ParseGlob("./templates/*.html")),
 	}
+	echo.NotFoundHandler = Redirect404
 	e := echo.New()
 	e.Renderer = t
 	e.Logger.SetLevel(log.DEBUG)
