@@ -53,20 +53,36 @@
                     </div>
                 {{ end }}
                 {{ range  .Objects }}
-                    {{ if .Type }}
-                        <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
-                            <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
-                            <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item"
-                               data-fancybox="gallery" data-caption="{{ .Name }}">
-                                <img src="{{.Url}}" alt="Image" class="img-fluid">
-                                <div class="photo-text-more">
+                    {{ if .IsValid }}
+                        {{ if eq .Type "mp4" }}
+                            <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+                                <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
+                                <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item"
+                                   data-fancybox="gallery" data-caption="{{ .Name }}">
+                                    <video src="{{.Url}}#t=0.1" alt="Image" class="img-fluid">
                                     <div class="photo-text-more">
-                                        <h3 class="heading">{{.Name}}</h3>
-                                        <br><span class="icon icon-search"></span>
+                                        <div class="photo-text-more">
+                                            <h3 class="heading">{{.Name}}</h3>
+                                            <br><span class="icon icon-search"></span>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>
+                        {{ else }}
+                            <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
+                                <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
+                                <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item"
+                                   data-fancybox="gallery" data-caption="{{ .Name }}">
+                                    <img src="{{.Url}}" alt="Image" class="img-fluid">
+                                    <div class="photo-text-more">
+                                        <div class="photo-text-more">
+                                            <h3 class="heading">{{.Name}}</h3>
+                                            <br><span class="icon icon-search"></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {{ end }}
                     {{ else }}
                         <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
                             <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
