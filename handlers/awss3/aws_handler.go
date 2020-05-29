@@ -74,9 +74,10 @@ func (h Handler) ListBaseObjects(c echo.Context) error {
 		}
 		urlStr, _ := req.Presign(15 * time.Minute)
 		result.Objects[i] = handlers.Object{
-			Name: *item.Key,
-			Url:  urlStr,
-			Type: fileTypeIsValid,
+			Name:    *item.Key,
+			Url:     urlStr,
+			Type:    fileType,
+			IsValid: fileTypeIsValid,
 		}
 	}
 	return c.Render(http.StatusOK, "album.html", result)
