@@ -23,9 +23,10 @@ type Bucket struct {
 }
 
 type Object struct {
-	Name string
-	Url  string
-	Type bool
+	Name    string
+	Url     string
+	Type    string
+	IsValid bool
 }
 
 type Folder struct {
@@ -46,7 +47,7 @@ type ListBucketsResult struct {
 	Count   int
 }
 
-var ValidFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG", "jpg", "jpeg"}
+var ValidFileType = [...]string{"png", "PNG", "Png", "Jpeg", "JPEG", "Jpg", "JPG", "jpg", "jpeg", "mp4", "mpeg4", "MP4"}
 
 func GetFileType(fileName string) string {
 	result := strings.Split(fileName, ".")
