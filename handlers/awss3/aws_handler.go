@@ -227,9 +227,10 @@ func (h Handler) ListObjectsWithKey(c echo.Context) error {
 		urlStr, _ := req.Presign(15 * time.Minute)
 
 		result.Objects[i] = handlers.Object{
-			Name: *item.Key,
-			Url:  urlStr,
-			Type: fileTypeIsValid,
+			Name:    *item.Key,
+			Url:     urlStr,
+			Type:    fileType,
+			IsValid: fileTypeIsValid,
 		}
 	}
 	return c.JSON(http.StatusOK, result)
