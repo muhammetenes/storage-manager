@@ -59,7 +59,7 @@
                                 <div class="checkbox-btn"><input type="checkbox" class="photo-item-checkbox"/></div>
                                 <a href="{{.Url}}" data-url="{{ .Url }}" class="d-block photo-item album-item"
                                    data-fancybox="gallery" data-caption="{{ .Name }}">
-                                    <video src="{{ .Url }}#t=0.1" alt="Image" class="img-fluid"/>
+                                    <video src="{{ .Url }}#t=0.1" alt="Image" class="img-fluid"></video>
                                     <div class="photo-text-more">
                                         <div class="photo-text-more">
                                             <h3 class="heading">{{ .Name }}</h3>
@@ -161,6 +161,7 @@
     </div>
 
 </div>
+
 {{ template "scripts.html" }}
 
 <script type="text/javascript">
