@@ -15,8 +15,10 @@
     </div>
 
     {{ template "header.html" }}
+
     <main class="main-content">
         <div class="container-fluid photos">
+
             <div class="row pt-4 mb-5 text-center">
                 <div class="col-md-2">
                     {{ if ne .PreviousFolderUrl "" }}
@@ -100,7 +102,9 @@
                     {{ end }}
                 {{ end }}
             </div>
+
             <a id="download-item" target="_blank" href="" download></a>
+
             {{ template "footer.html" }}
         </div>
     </main>
