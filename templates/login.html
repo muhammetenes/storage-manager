@@ -112,7 +112,7 @@
         var region_select_elem = $('#region_id')
         region_select_elem.html("")
         region_select_elem.append($('<option>').val("").text(""));
-        if (provider == "s3") {
+        if (provider === "s3") {
             $.each(awsRegions, function (key, val) {
                 region_select_elem.append($('<option>').val(key).text(val));
             })
