@@ -156,7 +156,19 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 	})
 	if err != nil {
 		if _, ok := err.(awserr.RequestFailure); ok {
-			return c.Render(http.StatusOK, "album.html", result)
+			region, err := svc.GetBucketLocation(&s3.GetBucketLocationInput{
+				Bucket: aws.String(bucket),
+			})
+			config.Conf.UpdateAwsRegion(*region.LocationConstraint)
+			svc = s3.New(getSession())
+			resp, err = svc.ListObjectsV2(&s3.ListObjectsV2Input{
+				Bucket:    aws.String(bucket),
+				MaxKeys:   aws.Int64(maxKeys),
+				Delimiter: aws.String("/"),
+			})
+			if err != nil {
+				return c.Render(http.StatusOK, "album.html", result)
+			}
 		} else {
 			return c.Render(http.StatusOK, "album.html", result)
 		}
