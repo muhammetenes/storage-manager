@@ -36,3 +36,7 @@ func (c *Config) DestroyConfig() {
 	c.AwsConfig.AwsSecretKey = ""
 	c.AwsConfig.AwsRegion = ""
 }
+
+func (c *Config) UpdateAwsRegion(r string) {
+	c.AwsConfig.AwsRegion = r
+}
