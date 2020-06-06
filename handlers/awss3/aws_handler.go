@@ -155,6 +155,7 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 		Prefix:    aws.String(folderKey),
 	})
 	if err != nil {
+		// Region Control
 		if _, ok := err.(awserr.RequestFailure); ok {
 			region, err := svc.GetBucketLocation(&s3.GetBucketLocationInput{
 				Bucket: aws.String(bucket),
