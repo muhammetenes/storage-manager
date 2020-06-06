@@ -142,7 +142,11 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 		Prefix:    aws.String(folderKey),
 	})
 	if err != nil {
-		return c.Render(http.StatusOK, "album.html", result)
+		if _, ok := err.(awserr.RequestFailure); ok {
+			return c.Render(http.StatusOK, "album.html", result)
+		} else {
+			return c.Render(http.StatusOK, "album.html", result)
+		}
 	}
 
 	// Adding folders
