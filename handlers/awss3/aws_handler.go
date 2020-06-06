@@ -20,6 +20,7 @@ import (
 
 type Handler struct{}
 
+// Aws Regions
 var awsRegions = []string{
 	"eu-central-1",
 	"eu-west-1",
