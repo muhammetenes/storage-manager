@@ -116,7 +116,7 @@ func (h Handler) ListBaseObjects(c echo.Context) error {
 
 func getPreviousUrl(f string, c echo.Context, b string) string {
 	splitFolder := strings.Split(f, ":")
-	folder := strings.Join(splitFolder[0:len(splitFolder)-2], "") + ":"
+	folder := strings.Join(splitFolder[0:len(splitFolder)-2], ":") + ":"
 	if folder == ":" {
 		return c.Echo().URI(base_handlers.ListBaseObjects, b)
 	} else {
