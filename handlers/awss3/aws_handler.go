@@ -159,6 +159,9 @@ func (h Handler) ListFolderObjects(c echo.Context) error {
 		}
 	}
 
+	if resp.Contents == nil {
+		return c.Render(http.StatusOK, "album.html", result)
+	}
 	// Adding object count
 	// The first object in the folder is always itself
 	result.Count = len(resp.Contents) - 1
