@@ -71,7 +71,11 @@ func (h Handler) ListBaseObjects(c echo.Context) error {
 		Delimiter: aws.String("/"),
 	})
 	if err != nil {
-		return c.Render(http.StatusOK, "album.html", result)
+		if _, ok := err.(awserr.RequestFailure); ok {
+			return c.Render(http.StatusOK, "album.html", result)
+		} else {
+			return c.Render(http.StatusOK, "album.html", result)
+		}
 	}
 	// Adding folders
 	result.Folders = make([]handlers.Folder, len(resp.CommonPrefixes))
