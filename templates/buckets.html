@@ -17,6 +17,7 @@
     {{ template "header.html" }}
     <main class="main-content">
         <div class="container-fluid photos">
+
             <div class="row pt-4 mb-5 text-center">
                 <div class="offset-2 col-8">
                     <h2 class="text-white mb-4">Buckets</h2>
@@ -26,6 +27,7 @@
                            data-toggle="modal" data-target="#createBucketModal">
                 </div>
             </div>
+
             <div class="row align-items-stretch">
                 {{ range  .Buckets }}
                     <div class="col-6 col-md-6 col-lg-3" data-aos="fade-up">
