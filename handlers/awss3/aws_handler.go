@@ -529,6 +529,5 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 // worker pool test
 func (h Handler) WorkerPoolDeleteFolders(c echo.Context) error {
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-
 	return c.JSON(http.StatusOK, response)
 }
