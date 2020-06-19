@@ -49,6 +49,8 @@ var AwsRegions = []string{
 
 const maxKeys = 100
 
+const workerNum = 10
+
 func getSession() *session.Session {
 	sess, _ := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.Conf.AwsConfig.AwsId, config.Conf.AwsConfig.AwsSecretKey, ""),
