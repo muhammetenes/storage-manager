@@ -526,6 +526,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	}
 }*/
 
+// worker pool test
 func (h Handler) WorkerPoolDeleteFolders(c echo.Context) error {
 	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]
