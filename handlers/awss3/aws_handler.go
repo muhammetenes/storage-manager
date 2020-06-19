@@ -529,34 +529,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 // worker pool test
 func (h Handler) WorkerPoolDeleteFolders(c echo.Context) error {
 	_ = c.FormValue("keys[]")
-	keys := c.Request().Form["keys[]"]
-	svc := s3.New(getSession())
-	bucket := c.ParamValues()[0]
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
-	wg.Add(len(keys))
-	errors := make(chan string, len(keys))
-	//for i := 0; i < 3; i++  {
-	//	go worker()
-	//}
-	for _, key := range keys {
-		// Delete folder func
-		go func(bucket string, key string, wg *sync.WaitGroup) {
-			defer wg.Done()
-			iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
-				Bucket: aws.String(bucket),
-				Prefix: aws.String(key),
-			})
-			if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
-				errors <- key
-				return
-			}
-		}(bucket, key, &wg)
-	}
-	wg.Wait()
-	close(errors)
-	for e := range errors {
-		response.Failed = append(response.Failed, e)
-	}
+
 	return c.JSON(http.StatusOK, response)
 }
