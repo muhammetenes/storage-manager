@@ -511,21 +511,3 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, response)
 }
-
-func worker(svc *s3.S3, bucket string, key string, wg *sync.WaitGroup, errors chan string) {
-	defer wg.Done()
-	iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
-		Prefix: aws.String(key),
-	})
-	if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
-		errors <- key
-		return
-	}
-}
-
-// worker pool test
-func (h Handler) WorkerPoolDeleteFolders(c echo.Context) error {
-	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	return c.JSON(http.StatusOK, response)
-}
