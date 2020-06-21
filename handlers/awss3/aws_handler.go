@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/gammazero/workerpool"
 	"github.com/labstack/echo"
 	"main/config"
 	"main/handlers"
@@ -479,6 +480,20 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 		}
 	}
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects deleted"})
+}
+
+func worker(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
+	wp.Submit(func() {
+		defer wg.Done()
+		iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
+			Bucket: aws.String(bucket),
+			Prefix: aws.String(key),
+		})
+		if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
+			e <- key
+			return
+		}
+	})
 }
 
 func (h Handler) DeleteFolders(c echo.Context) error {
