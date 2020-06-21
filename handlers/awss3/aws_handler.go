@@ -505,19 +505,10 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	var wg sync.WaitGroup
 	wg.Add(len(keys))
 	errors := make(chan string, len(keys))
+	wp := workerpool.New(workerNum)
 	for _, key := range keys {
 		// Delete folder func
-		go func(bucket string, key string, wg *sync.WaitGroup) {
-			defer wg.Done()
-			iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
-				Bucket: aws.String(bucket),
-				Prefix: aws.String(key),
-			})
-			if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
-				errors <- key
-				return
-			}
-		}(bucket, key, &wg)
+		worker(bucket, key, &wg, wp, errors, svc)
 	}
 	wg.Wait()
 	close(errors)
