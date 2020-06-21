@@ -511,6 +511,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 		worker(bucket, key, &wg, wp, errors, svc)
 	}
 	wg.Wait()
+	wp.StopWait()
 	close(errors)
 	for e := range errors {
 		response.Failed = append(response.Failed, e)
