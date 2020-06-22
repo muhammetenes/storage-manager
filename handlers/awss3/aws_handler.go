@@ -482,7 +482,7 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects deleted"})
 }
 
-func worker(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
+func send_to_worker(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
 	wp.Submit(func() {
 		defer wg.Done()
 		iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
@@ -508,7 +508,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, key := range keys {
 		// Delete folder func
-		worker(bucket, key, &wg, wp, errors, svc)
+		send_to_worker(bucket, key, &wg, wp, errors, svc)
 	}
 	wg.Wait()
 	wp.StopWait()
