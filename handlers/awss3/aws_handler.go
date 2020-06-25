@@ -482,10 +482,6 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects deleted"})
 }
 
-func sendToWorkerForDeleteFolders(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
-
-}
-
 func (h Handler) DeleteFolders(c echo.Context) error {
 	_ = c.FormValue("keys[]")
 	keys := c.Request().Form["keys[]"]
