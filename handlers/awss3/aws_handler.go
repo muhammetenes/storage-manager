@@ -507,7 +507,6 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 				}
 			})
 		}(bucket, key, &wg, wp)
-		sendToWorkerForDeleteFolders(bucket, key, &wg, wp, errors, svc)
 	}
 	wg.Wait()
 	wp.StopWait()
