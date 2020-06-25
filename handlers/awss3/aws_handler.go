@@ -482,18 +482,8 @@ func (h Handler) DeleteObjects(c echo.Context) error {
 	return c.JSON(http.StatusOK, handlers.JsonResponse{Error: false, Message: "Objects deleted"})
 }
 
-func sendToWorker(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
-	wp.Submit(func() {
-		defer wg.Done()
-		iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
-			Bucket: aws.String(bucket),
-			Prefix: aws.String(key),
-		})
-		if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
-			e <- key
-			return
-		}
-	})
+func sendToWorkerForDeleteFolders(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool, e chan string, svc *s3.S3) {
+
 }
 
 func (h Handler) DeleteFolders(c echo.Context) error {
@@ -508,7 +498,20 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, key := range keys {
 		// Delete folder func
-		sendToWorker(bucket, key, &wg, wp, errors, svc)
+		func(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool) {
+			wp.Submit(func() {
+				defer wg.Done()
+				iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
+					Bucket: aws.String(bucket),
+					Prefix: aws.String(key),
+				})
+				if err := s3manager.NewBatchDeleteWithClient(svc).Delete(aws.BackgroundContext(), iter); err != nil {
+					errors <- key
+					return
+				}
+			})
+		}(bucket, key, &wg, wp)
+		sendToWorkerForDeleteFolders(bucket, key, &wg, wp, errors, svc)
 	}
 	wg.Wait()
 	wp.StopWait()
