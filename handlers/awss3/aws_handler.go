@@ -50,7 +50,7 @@ var AwsRegions = []string{
 
 const maxKeys = 100
 
-const workerNum = 10
+const workerNum = 15
 
 func getSession() *session.Session {
 	sess, _ := session.NewSession(&aws.Config{
