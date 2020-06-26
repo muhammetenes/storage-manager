@@ -363,6 +363,7 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	var wg sync.WaitGroup
 	errors := make(chan string, len(files))
 	wg.Add(len(files))
+	wp := workerpool.New(workerNum)
 	for _, file := range files {
 		// Upload file func
 		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
