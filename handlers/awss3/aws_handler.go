@@ -407,6 +407,7 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
 	var wg sync.WaitGroup
 	wg.Add(len(buckets))
+	wp := workerpool.New(workerNum)
 	for _, bucket := range buckets {
 		// Delete bucket func
 		go func(bucket string, wg *sync.WaitGroup) {
