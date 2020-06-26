@@ -433,22 +433,6 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 					}
 				}
 			})
-			if err != nil {
-				if _, ok := err.(awserr.RequestFailure); ok {
-					errors <- bucket
-					return
-				}
-			}
-			// Bucket is delete control
-			err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
-				Bucket: aws.String(bucket),
-			})
-			if err != nil {
-				if _, ok := err.(awserr.RequestFailure); ok {
-					errors <- bucket
-					return
-				}
-			}
 		}(bucket, &wg)
 	}
 	wg.Wait()
