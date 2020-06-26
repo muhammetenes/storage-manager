@@ -395,6 +395,7 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 		}(file, &wg)
 	}
 	wg.Wait()
+	wp.StopWait()
 	close(errors)
 	for e := range errors {
 		response.Failed = append(response.Failed, e)
