@@ -410,10 +410,28 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, bucket := range buckets {
 		// Delete bucket func
-		go func(bucket string, wg *sync.WaitGroup) {
-			defer wg.Done()
-			_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
-				Bucket: aws.String(bucket),
+		func(bucket string, wg *sync.WaitGroup) {
+			wp.Submit(func() {
+				defer wg.Done()
+				_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
+					Bucket: aws.String(bucket),
+				})
+				if err != nil {
+					if _, ok := err.(awserr.RequestFailure); ok {
+						errors <- bucket
+						return
+					}
+				}
+				// Bucket is delete control
+				err = svc.WaitUntilBucketNotExists(&s3.HeadBucketInput{
+					Bucket: aws.String(bucket),
+				})
+				if err != nil {
+					if _, ok := err.(awserr.RequestFailure); ok {
+						errors <- bucket
+						return
+					}
+				}
 			})
 			if err != nil {
 				if _, ok := err.(awserr.RequestFailure); ok {
