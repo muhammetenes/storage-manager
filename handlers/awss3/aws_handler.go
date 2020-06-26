@@ -366,30 +366,32 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, file := range files {
 		// Upload file func
-		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
-			src, err := file.Open()
-			if err != nil {
-				if _, ok := err.(awserr.RequestFailure); ok {
-					errors <- file.Filename
-					return
+		func(file *multipart.FileHeader, wg *sync.WaitGroup) {
+			wp.Submit(func() {
+				src, err := file.Open()
+				if err != nil {
+					if _, ok := err.(awserr.RequestFailure); ok {
+						errors <- file.Filename
+						return
+					}
 				}
-			}
-			defer src.Close()
-			defer wg.Done()
+				defer src.Close()
+				defer wg.Done()
 
-			// Copy file
-			uploader := s3manager.NewUploader(sess)
-			_, err = uploader.Upload(&s3manager.UploadInput{
-				Bucket: aws.String(bucket),
-				Key:    aws.String(folder_key[0] + file.Filename),
-				Body:   src,
-			})
-			if err != nil {
-				if _, ok := err.(awserr.RequestFailure); ok {
-					errors <- file.Filename
-					return
+				// Copy file
+				uploader := s3manager.NewUploader(sess)
+				_, err = uploader.Upload(&s3manager.UploadInput{
+					Bucket: aws.String(bucket),
+					Key:    aws.String(folder_key[0] + file.Filename),
+					Body:   src,
+				})
+				if err != nil {
+					if _, ok := err.(awserr.RequestFailure); ok {
+						errors <- file.Filename
+						return
+					}
 				}
-			}
+			})
 		}(file, &wg)
 	}
 	wg.Wait()
