@@ -377,7 +377,6 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 				}
 				defer src.Close()
 				defer wg.Done()
-
 				// Copy file
 				uploader := s3manager.NewUploader(sess)
 				_, err = uploader.Upload(&s3manager.UploadInput{
