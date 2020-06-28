@@ -491,9 +491,8 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, key := range keys {
 		// Delete folder func
-		func(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool) {
+		func(bucket string, key string, wp *workerpool.WorkerPool) {
 			wp.Submit(func() {
-				defer wg.Done()
 				iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
 					Bucket: aws.String(bucket),
 					Prefix: aws.String(key),
@@ -503,7 +502,7 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 					return
 				}
 			})
-		}(bucket, key, &wg, wp)
+		}(bucket, key, wp)
 	}
 	wp.StopWait()
 	close(errors)
