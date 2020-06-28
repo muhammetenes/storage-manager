@@ -487,8 +487,6 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
-	wg.Add(len(keys))
 	errors := make(chan string, len(keys))
 	wp := workerpool.New(workerNum)
 	for _, key := range keys {
@@ -507,7 +505,6 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 			})
 		}(bucket, key, &wg, wp)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
