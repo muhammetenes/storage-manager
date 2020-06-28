@@ -407,9 +407,8 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, bucket := range buckets {
 		// Delete bucket func
-		func(bucket string, wg *sync.WaitGroup) {
+		func(bucket string) {
 			wp.Submit(func() {
-				defer wg.Done()
 				_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
 					Bucket: aws.String(bucket),
 				})
