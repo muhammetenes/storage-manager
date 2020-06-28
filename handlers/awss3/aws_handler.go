@@ -404,8 +404,6 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	buckets := c.Request().Form["buckets[]"]
 	errors := make(chan string, len(buckets))
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
-	wg.Add(len(buckets))
 	wp := workerpool.New(workerNum)
 	for _, bucket := range buckets {
 		// Delete bucket func
@@ -432,9 +430,8 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 					}
 				}
 			})
-		}(bucket, &wg)
+		}(bucket)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
