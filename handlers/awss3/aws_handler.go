@@ -364,7 +364,7 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	wp := workerpool.New(workerNum)
 	for _, file := range files {
 		// Upload file func
-		func(file *multipart.FileHeader, wg *sync.WaitGroup) {
+		func(file *multipart.FileHeader) {
 			wp.Submit(func() {
 				src, err := file.Open()
 				if err != nil {
