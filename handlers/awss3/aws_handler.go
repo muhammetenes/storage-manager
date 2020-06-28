@@ -360,9 +360,7 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	folder_key := form.Value["folder_key_input"]
 	files := form.File["file_input"]
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
 	errors := make(chan string, len(files))
-	wg.Add(len(files))
 	wp := workerpool.New(workerNum)
 	for _, file := range files {
 		// Upload file func
@@ -376,7 +374,6 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 					}
 				}
 				defer src.Close()
-				defer wg.Done()
 				// Copy file
 				uploader := s3manager.NewUploader(sess)
 				_, err = uploader.Upload(&s3manager.UploadInput{
@@ -391,9 +388,8 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 					}
 				}
 			})
-		}(file, &wg)
+		}(file)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
