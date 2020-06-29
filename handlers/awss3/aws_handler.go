@@ -15,7 +15,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -360,13 +359,11 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 	folder_key := form.Value["folder_key_input"]
 	files := form.File["file_input"]
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
 	errors := make(chan string, len(files))
-	wg.Add(len(files))
 	wp := workerpool.New(workerNum)
 	for _, file := range files {
 		// Upload file func
-		func(file *multipart.FileHeader, wg *sync.WaitGroup) {
+		func(file *multipart.FileHeader) {
 			wp.Submit(func() {
 				src, err := file.Open()
 				if err != nil {
@@ -376,7 +373,6 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 					}
 				}
 				defer src.Close()
-				defer wg.Done()
 				// Copy file
 				uploader := s3manager.NewUploader(sess)
 				_, err = uploader.Upload(&s3manager.UploadInput{
@@ -391,9 +387,8 @@ func (h Handler) UploadFileToBucket(c echo.Context) error {
 					}
 				}
 			})
-		}(file, &wg)
+		}(file)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
@@ -408,14 +403,11 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 	buckets := c.Request().Form["buckets[]"]
 	errors := make(chan string, len(buckets))
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
-	wg.Add(len(buckets))
 	wp := workerpool.New(workerNum)
 	for _, bucket := range buckets {
 		// Delete bucket func
-		func(bucket string, wg *sync.WaitGroup) {
+		func(bucket string) {
 			wp.Submit(func() {
-				defer wg.Done()
 				_, err := svc.DeleteBucket(&s3.DeleteBucketInput{
 					Bucket: aws.String(bucket),
 				})
@@ -436,9 +428,8 @@ func (h Handler) DeleteBuckets(c echo.Context) error {
 					}
 				}
 			})
-		}(bucket, &wg)
+		}(bucket)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
@@ -495,15 +486,12 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 	svc := s3.New(getSession())
 	bucket := c.ParamValues()[0]
 	response := handlers.DetailedJsonResponse{Error: false, Message: "Success"}
-	var wg sync.WaitGroup
-	wg.Add(len(keys))
 	errors := make(chan string, len(keys))
 	wp := workerpool.New(workerNum)
 	for _, key := range keys {
 		// Delete folder func
-		func(bucket string, key string, wg *sync.WaitGroup, wp *workerpool.WorkerPool) {
+		func(bucket string, key string, wp *workerpool.WorkerPool) {
 			wp.Submit(func() {
-				defer wg.Done()
 				iter := s3manager.NewDeleteListIterator(svc, &s3.ListObjectsInput{
 					Bucket: aws.String(bucket),
 					Prefix: aws.String(key),
@@ -513,9 +501,8 @@ func (h Handler) DeleteFolders(c echo.Context) error {
 					return
 				}
 			})
-		}(bucket, key, &wg, wp)
+		}(bucket, key, wp)
 	}
-	wg.Wait()
 	wp.StopWait()
 	close(errors)
 	for e := range errors {
