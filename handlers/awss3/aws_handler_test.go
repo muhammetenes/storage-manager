@@ -13,7 +13,7 @@ func TestLogin(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	c.SetPath("/users/:email")
+	c.SetPath("/login")
 	c.SetParamNames("email")
 	c.SetParamValues("jon@labstack.com")
 
