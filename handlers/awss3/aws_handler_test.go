@@ -10,7 +10,7 @@ import (
 
 func TestLogin(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/login", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetPath("/login")
@@ -20,6 +20,6 @@ func TestLogin(t *testing.T) {
 	// Assertions
 	if assert.NoError(t, h.getUser(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, userJSON, rec.Body.String())
+		assert.Equal(t, "", rec.Body.String())
 	}
 }
