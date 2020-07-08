@@ -14,8 +14,8 @@ func TestLogin(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetPath("/login")
-	c.SetParamNames("email")
-	c.SetParamValues("jon@labstack.com")
+	//c.SetParamNames("email")
+	//c.SetParamValues("jon@labstack.com")
 
 	// Assertions
 	if assert.NoError(t, h.getUser(c)) {
