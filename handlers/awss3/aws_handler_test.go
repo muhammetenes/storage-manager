@@ -16,7 +16,6 @@ func TestLogin(t *testing.T) {
 	c.SetPath("/login")
 	//c.SetParamNames("email")
 	//c.SetParamValues("jon@labstack.com")
-
 	// Assertions
 	if assert.NoError(t, h.getUser(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
