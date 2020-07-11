@@ -10,7 +10,7 @@ import (
 
 func TestLogin(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/login", nil)
+	req := httptest.NewRequest(http.MethodPost, "/login", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetPath("/login")
