@@ -13,8 +13,5 @@ func TestLogin(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetPath("/login")
-	//if assert.NoError(t, h.getUser(c)) {
-	//	assert.Equal(t, http.StatusOK, rec.Code)
-	//	assert.Equal(t, "", rec.Body.String())
-	//}
+
 }
