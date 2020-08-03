@@ -79,7 +79,6 @@
 </div>
 {{ template "scripts.html" }}
 <script>
-
     awsRegions = {
         "eu-central-1": "Europe (Frankfurt) eu-central-1",
         "eu-west-1": "Europe (Ireland) eu-west-1",
@@ -105,7 +104,6 @@
         "cn-north-1": "China (Beijing) cn-north-1",
         "cn-northwest-1": "China (Ningxia) cn-northwest-1"
     };
-
     $("#storage_provider_id").change(function () {
         var provider = this.value;
         var region_select_elem = $('#region_id')
@@ -117,7 +115,6 @@
             })
         }
     })
-
 </script>
 </body>
 </html>
