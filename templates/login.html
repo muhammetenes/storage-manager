@@ -98,7 +98,7 @@
         "cn-northwest-1": "China (Ningxia) cn-northwest-1"
     };
     $("#storage_provider_id").change(function () {
-        var provider = this.value;
+        let provider = this.value;
         var region_select_elem = $('#region_id')
         region_select_elem.html("")
         region_select_elem.append($('<option>').val("").text(""));
