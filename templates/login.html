@@ -74,7 +74,7 @@
 {{ template "scripts.html" }}
 
 <script>
-    awsRegions = {
+    awsAllRegions = {
         "eu-central-1": "Europe (Frankfurt) eu-central-1",
         "eu-west-1": "Europe (Ireland) eu-west-1",
         "eu-west-2": "Europe (London) eu-west-2",
@@ -105,7 +105,7 @@
         region_select_elem.html("")
         region_select_elem.append($('<option>').val("").text(""));
         if (provider === "s3") {
-            $.each(awsRegions, function (key, val) {
+            $.each(awsAllRegions, function (key, val) {
                 region_select_elem.append($('<option>').val(key).text(val));
             })
         }
